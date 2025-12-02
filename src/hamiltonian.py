@@ -1,6 +1,5 @@
 from functools import reduce
 from operator import add
-
 import pylops
 from pauli import Identity, PauliX, PauliY, PauliZ
 
@@ -28,6 +27,9 @@ class Hamiltonian:
         obj = super().__new__(cls)
         obj._lincomb = lincomb
         return obj
+
+    def to_matrix(self):
+        return self._lincomb.matrix()
 
     def to_linop(self):
         linops = []
