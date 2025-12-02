@@ -2,6 +2,15 @@ import numpy as np
 from pylops import LinearOperator
 
 
+class Identity(LinearOperator):
+
+    def __init__(self):
+        super().__init__(shape=(2,2), dtype=complex)
+
+    def _matvec(self, psi):
+        return np.array(psi)
+
+
 class PauliX(LinearOperator):
 
     def __init__(self):
