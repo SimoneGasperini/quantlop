@@ -1,1 +1,5 @@
-Exact Quantum Hamiltonian Simulation with matrix-free Linear Operators
+### Install from GitHub
+
+```
+pip install git+https://github.com/SimoneGasperini/quantlop.git
+```
