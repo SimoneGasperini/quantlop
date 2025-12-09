@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=75.8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "quantlop"
+version = "0.0.1"
+description = "Quantum hamiltonian simulation with matrix-free linear operators."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "SimoneGasperini", email = "simone.gasperini4@unibo.it" }]
+dependencies = ["pylops>=2.6"]
+
+[project.optional-dependencies]
+dev = ["pennylane", "ruff", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/SimoneGasperini/quantlop"
+
+[tool.setuptools.packages.find]
+where = ["src"]
