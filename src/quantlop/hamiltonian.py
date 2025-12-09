@@ -23,20 +23,23 @@ class Hamiltonian:
         return self._lincomb.__repr__()
 
     @classmethod
-    def from_pennylane(cls, lincomb):
+    def from_pennylane(cls, lincomb, num_qubits):
         obj = super().__new__(cls)
         obj._lincomb = lincomb
+        obj._num_qubits = num_qubits
         return obj
 
     def to_matrix(self):
-        return self._lincomb.matrix()
+        wire_order = range(self._num_qubits)
+        matrix = self._lincomb.matrix(wire_order=wire_order)
+        return matrix
 
     def to_linop(self):
         linops = []
         pauli_sentence = self._lincomb.pauli_rep
-        qubits = self._lincomb.wires
+        wire_order = range(self._num_qubits)
         for pword, coeff in pauli_sentence.items():
-            paulis = [char2linop[pword.get(qubit, "I")] for qubit in qubits]
+            paulis = [char2linop[pword.get(wire, "I")] for wire in wire_order]
             linops.append(coeff * reduce(pylops.Kronecker, paulis))
         linop = reduce(add, linops)
         return linop
