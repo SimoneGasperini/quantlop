@@ -1,7 +1,7 @@
 from functools import reduce
 from operator import add
 import pylops
-from pauli import Identity, PauliX, PauliY, PauliZ
+from .pauli import Identity, PauliX, PauliY, PauliZ
 
 
 char2linop = {
