@@ -16,22 +16,35 @@ def get_terms(pauli_sent, num_qubits):
 
 
 class Hamiltonian(LinearOperator):
-    def __new__(cls, *args, **kwargs):
-        raise ValueError(
-            "Hamiltonian cannot be instantiated directly. "
-            "Use Hamiltonian.from_pennylane(...) instead."
-        )
+    def __new__(cls, *args, allowed=False, **kwargs):
+        if not allowed:
+            raise ValueError(
+                "Hamiltonian cannot be instantiated directly. "
+                "Use Hamiltonian.from_pennylane(...) instead."
+            )
+        return super().__new__(cls, *args, **kwargs)
+
+    def __init__(self, operator, num_qubits):
+        shape = (2**num_qubits, 2**num_qubits)
+        super().__init__(dtype=complex, shape=shape)
+        self._operator = operator
+        self._num_qubits = num_qubits
 
     def __repr__(self):
         return self._operator.__repr__()
 
+    def __mul__(self, scalar):
+        new_operator = scalar * self._operator
+        num_qubits = self._num_qubits
+        return self.from_pennylane(operator=new_operator, num_qubits=num_qubits)
+
+    def __rmul__(self, scalar):
+        return self.__mul__(scalar)
+
     @classmethod
     def from_pennylane(cls, operator, num_qubits):
-        obj = super().__new__(cls)
-        shape = (2**num_qubits, 2**num_qubits)
-        obj.__init__(shape=shape, dtype=complex)
-        obj._operator = operator
-        obj._num_qubits = num_qubits
+        obj = cls.__new__(cls, allowed=True)
+        obj.__init__(operator, num_qubits)
         return obj
 
     def to_matrix(self):
