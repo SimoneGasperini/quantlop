@@ -41,10 +41,11 @@ def _fragment_3_1(A, p_max=8, m_max=55):
         for p in range(2, p_max + 1):
             alpha_p = max(compute_d(A, p), compute_d(A, p + 1))
             for m in range(p * (p - 1) - 1, m_max + 1):
-                s_m = np.ceil(alpha_p / _theta[m])
-                if m_star is None or m * s_m < m_star * s:
-                    m_star = m
-                    s = s_m
+                if m in _theta:  # why?
+                    s_m = np.ceil(alpha_p / _theta[m])
+                    if m_star is None or m * s_m < m_star * s:
+                        m_star = m
+                        s = s_m
         s = max(s, 1)
     return int(m_star), int(s)
 

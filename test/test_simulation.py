@@ -17,7 +17,7 @@ def test_scipy(nqubits):
     assert np.allclose(psi_scipy, psi_linop)
 
 
-@pytest.mark.parametrize("nqubits", range(1, 9))
+@pytest.mark.parametrize("nqubits", range(1, 11))
 def test_pennylane(nqubits):
     psi = get_rand_statevector(nqubits=nqubits)
     op = get_rand_hamiltonian(nqubits=nqubits, num_terms=nqubits * 5)
