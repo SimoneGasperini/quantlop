@@ -4,15 +4,15 @@ from scipy.sparse.linalg import LinearOperator
 from .pauli import PauliWord
 
 
-def coeffs_and_strings(pauli_sent, num_qubits):
-    pauli_strings = []
+def get_terms(pauli_sent, num_qubits):
+    terms = []
     for pauli_word, coeff in pauli_sent.items():
         pauli_list = ["I"] * num_qubits
         for qubit, pauli_char in pauli_word.items():
             pauli_list[qubit] = pauli_char
-        pauli_str = "".join(pauli_list)
-        pauli_strings.append((coeff, pauli_str))
-    return pauli_strings
+        pauli_string = "".join(pauli_list)
+        terms.append((coeff, pauli_string))
+    return terms
 
 
 class Hamiltonian(LinearOperator):
@@ -41,8 +41,8 @@ class Hamiltonian(LinearOperator):
 
     def _matvec(self, vec):
         pauli_sent = self._operator.pauli_rep
-        coeffs_strings = coeffs_and_strings(pauli_sent, num_qubits=self._num_qubits)
-        pauli_words = (coeff * PauliWord(string) for coeff, string in coeffs_strings)
+        terms = get_terms(pauli_sent, num_qubits=self._num_qubits)
+        pauli_words = (coeff * PauliWord(string) for coeff, string in terms)
         linop = reduce(add, pauli_words)
         vec_new = linop._matvec(vec)
         return vec_new
