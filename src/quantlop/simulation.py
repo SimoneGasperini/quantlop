@@ -55,7 +55,7 @@ def _one_norm(A):
     max_col_sum = 0
     for j in range(n_cols):
         e[j] = 1
-        col_sum = np.sum(np.abs(A.matvec(e)))
+        col_sum = np.sum(np.abs(A._matvec(e)))
         if col_sum > max_col_sum:
             max_col_sum = col_sum
         e[j] = 0
