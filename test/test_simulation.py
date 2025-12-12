@@ -6,27 +6,29 @@ from quantlop import Hamiltonian, evolve
 from utils import get_rand_statevector, get_rand_hamiltonian
 
 
-@pytest.mark.parametrize("num_qubits", range(1, 9))
-def test_scipy(num_qubits):
-    psi = get_rand_statevector(num_qubits=num_qubits)
-    op = get_rand_hamiltonian(num_qubits=num_qubits, num_terms=num_qubits * 5)
-    ham = Hamiltonian.from_pennylane(op, num_qubits=num_qubits)
+@pytest.mark.parametrize("nqubits", range(1, 9))
+def test_scipy(nqubits):
+    psi = get_rand_statevector(nqubits=nqubits)
+    op = get_rand_hamiltonian(nqubits=nqubits, num_terms=nqubits * 5)
+    mat = op.matrix(range(nqubits))
+    psi_scipy = sp.linalg.expm(-1j * mat) @ psi
+    ham = Hamiltonian.from_pennylane(op, nqubits=nqubits)
     psi_linop = evolve(ham, psi)
-    psi_dense = sp.linalg.expm(-1j * ham.to_matrix()) @ psi
-    assert np.allclose(psi_linop, psi_dense)
+    assert np.allclose(psi_scipy, psi_linop)
 
 
-@pytest.mark.parametrize("num_qubits", range(1, 9))
-def test_pennylane(num_qubits):
-    psi = get_rand_statevector(num_qubits=num_qubits)
-    op = get_rand_hamiltonian(num_qubits=num_qubits, num_terms=num_qubits * 5)
-    ham = Hamiltonian.from_pennylane(op, num_qubits=num_qubits)
-    psi_linop = evolve(ham, psi)
+@pytest.mark.parametrize("nqubits", range(1, 9))
+def test_pennylane(nqubits):
+    psi = get_rand_statevector(nqubits=nqubits)
+    op = get_rand_hamiltonian(nqubits=nqubits, num_terms=nqubits * 5)
 
     @qml.qnode(qml.device("default.qubit"))
     def circuit():
-        qml.StatePrep(psi, wires=range(num_qubits))
+        qml.StatePrep(psi, wires=range(nqubits))
         qml.evolve(op)
         return qml.state()
 
-    assert np.allclose(psi_linop, circuit())
+    psi_pennylane = circuit()
+    ham = Hamiltonian.from_pennylane(op, nqubits=nqubits)
+    psi_linop = evolve(ham, psi)
+    assert np.allclose(psi_pennylane, psi_linop)

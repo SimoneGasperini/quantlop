@@ -2,7 +2,7 @@ from functools import cache
 import numpy as np
 
 
-def evolve(ham, psi, coeff=1.0):
+def evolve(ham, psi, coeff=1):
     expm = -1j * coeff * ham
     return _expm_multiply(expm, psi)
 
@@ -28,7 +28,7 @@ def _expm_multiply(A, b):
 def _fragment_3_1(A, p_max=8, m_max=55):
     m_star = None
     s = None
-    A_one_norm = A._lcu_norm()
+    A_one_norm = A.lcu_norm()
     # Condition (3.13) in https://doi.org/10.1137/100788860 with l=1, n0=1
     if A_one_norm <= 2 * _theta[m_max] / m_max * p_max * (p_max + 3):
         for m in _theta:
@@ -51,7 +51,7 @@ def _fragment_3_1(A, p_max=8, m_max=55):
 
 @cache
 def compute_d(A, p):
-    return (A**p)._lcu_norm() ** (1 / p)
+    return (A**p).lcu_norm() ** (1 / p)
 
 
 _theta = {
