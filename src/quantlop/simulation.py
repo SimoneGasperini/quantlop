@@ -28,7 +28,7 @@ def _expm_multiply(A, b):
 def _fragment_3_1(A, p_max=8, m_max=55):
     m_star = None
     s = None
-    A_one_norm = _one_norm(A)
+    A_one_norm = A._lcu_norm()
     # Condition (3.13) in https://doi.org/10.1137/100788860 with l=1, n0=1
     if A_one_norm <= 2 * _theta[m_max] / m_max * p_max * (p_max + 3):
         for m in _theta:
@@ -49,22 +49,9 @@ def _fragment_3_1(A, p_max=8, m_max=55):
     return int(m_star), int(s)
 
 
-def _one_norm(A):
-    n_cols = A.shape[1]
-    e = np.zeros(n_cols)
-    max_col_sum = 0
-    for j in range(n_cols):
-        e[j] = 1
-        col_sum = np.sum(np.abs(A._matvec(e)))
-        if col_sum > max_col_sum:
-            max_col_sum = col_sum
-        e[j] = 0
-    return max_col_sum
-
-
 @cache
 def compute_d(A, p):
-    return _one_norm(A**p) ** (1 / p)
+    return (A**p)._lcu_norm() ** (1 / p)
 
 
 _theta = {

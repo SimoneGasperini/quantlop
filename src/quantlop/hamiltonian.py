@@ -52,6 +52,12 @@ class Hamiltonian(LinearOperator):
         matrix = self._operator.matrix(wire_order=wire_order)
         return matrix
 
+    def _lcu_norm(self):
+        pauli_sent = self._operator.pauli_rep
+        terms = get_terms(pauli_sent, num_qubits=self._num_qubits)
+        norm = sum(abs(coeff) for coeff, _ in terms)
+        return norm
+
     def _matvec(self, vec):
         pauli_sent = self._operator.pauli_rep
         terms = get_terms(pauli_sent, num_qubits=self._num_qubits)

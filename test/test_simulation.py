@@ -6,7 +6,7 @@ from quantlop import Hamiltonian, evolve
 from utils import get_rand_statevector, get_rand_hamiltonian
 
 
-@pytest.mark.parametrize("num_qubits", (1, 2, 3, 4))
+@pytest.mark.parametrize("num_qubits", range(1, 9))
 def test_scipy(num_qubits):
     psi = get_rand_statevector(num_qubits=num_qubits)
     op = get_rand_hamiltonian(num_qubits=num_qubits, num_terms=num_qubits * 5)
@@ -16,7 +16,7 @@ def test_scipy(num_qubits):
     assert np.allclose(psi_linop, psi_dense)
 
 
-@pytest.mark.parametrize("num_qubits", (1, 2, 3, 4))
+@pytest.mark.parametrize("num_qubits", range(1, 9))
 def test_pennylane(num_qubits):
     psi = get_rand_statevector(num_qubits=num_qubits)
     op = get_rand_hamiltonian(num_qubits=num_qubits, num_terms=num_qubits * 5)
