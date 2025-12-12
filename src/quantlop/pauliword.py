@@ -43,24 +43,20 @@ class PauliWord(LinearOperator):
         raise NotImplementedError
 
     def _matvec(self, vec):
-        nq = self.num_qubits
-        out = np.empty(2**nq, dtype=complex)
-        for i in range(2**nq):
-            b = [(i >> (nq - 1 - k)) & 1 for k in range(nq)]
-            b_new = list(b)
-            phase = 1 + 0j
-            for q, p in enumerate(self.string):
-                if p == "X":
-                    b_new[q] ^= 1
-                elif p == "Y":
-                    b_new[q] ^= 1
-                    phase *= 1j if b[q] == 0 else -1j
-                elif p == "Z":
-                    if b[q] == 1:
-                        phase *= -1
-            j = sum(bit << (nq - 1 - k) for k, bit in enumerate(b_new))
-            out[j] = phase * vec[i]
-        return self.coeff * out
+        out = vec.reshape((2,) * self.num_qubits)
+        for axis, pauli in enumerate(self.string):
+            if pauli == "X":
+                out = np.flip(out, axis=axis)
+            elif pauli == "Y":
+                out = np.flip(out, axis=axis)
+                shape = [1] * self.num_qubits
+                shape[axis] = 2
+                out = -1j * out * np.array([1, -1], dtype=complex).reshape(shape)
+            elif pauli == "Z":
+                shape = [1] * self.num_qubits
+                shape[axis] = 2
+                out = out * np.array([1, -1], dtype=complex).reshape(shape)
+        return self.coeff * out.reshape(-1)
 
 
 _paulimul = {
