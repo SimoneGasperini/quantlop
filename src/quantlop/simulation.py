@@ -3,7 +3,7 @@ import numpy as np
 
 
 def evolve(ham, psi, coeff=1.0):
-    expm = -1j * coeff * ham.to_linop()
+    expm = -1j * coeff * ham
     return _expm_multiply(expm, psi)
 
 
@@ -15,7 +15,7 @@ def _expm_multiply(A, b):
     for _ in range(s):
         c1 = np.linalg.norm(b, ord=np.inf)
         for j in range(1, m_star + 1):
-            b = A.matvec(b) / float(s * j)
+            b = A._matvec(b) / float(s * j)
             c2 = np.linalg.norm(b, ord=np.inf)
             f = f + b
             if c1 + c2 <= tol * np.linalg.norm(f, ord=np.inf):
