@@ -1,5 +1,7 @@
-from functools import cache
+from functools import cache, reduce
+from operator import mul
 import numpy as np
+from scipy.sparse.linalg import onenormest
 
 
 def evolve(ham, psi, coeff=1):
@@ -28,7 +30,10 @@ def _expm_multiply(A, b):
 def _fragment_3_1(A, p_max=8, m_max=55):
     m_star = None
     s = None
-    A_one_norm = A.lcu_norm()
+    try:
+        A_one_norm = A.lcu_norm()
+    except AttributeError:
+        A_one_norm = onenormest(A)
     # Condition (3.13) in https://doi.org/10.1137/100788860 with l=1, n0=1
     if A_one_norm <= 2 * _theta[m_max] / m_max * p_max * (p_max + 3):
         for m in _theta:
@@ -52,7 +57,8 @@ def _fragment_3_1(A, p_max=8, m_max=55):
 
 @cache
 def compute_d(A, p):
-    return (A**p).lcu_norm() ** (1 / p)
+    A_pow_p = reduce(mul, (A for _ in range(p)))
+    return onenormest(A_pow_p) ** (1 / p)
 
 
 _theta = {
