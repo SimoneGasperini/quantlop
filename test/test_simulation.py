@@ -3,13 +3,15 @@ import numpy as np
 import scipy as sp
 import pennylane as qml
 from quantlop import Hamiltonian, evolve
-from utils import get_rand_statevector, get_rand_hamiltonian
+from quantlop import get_rand_hamiltonian
 
 
 @pytest.mark.parametrize("nqubits", range(1, 9))
 def test_scipy(nqubits):
-    psi = get_rand_statevector(nqubits=nqubits)
+    psi = np.zeros(2**nqubits, dtype=complex)
+    psi[0] = 1
     op = get_rand_hamiltonian(nqubits=nqubits, num_terms=nqubits * 5)
+
     mat = op.matrix(range(nqubits))
     psi_scipy = sp.linalg.expm(-1j * mat) @ psi
     ham = Hamiltonian.from_pennylane(op, nqubits=nqubits)
@@ -19,12 +21,12 @@ def test_scipy(nqubits):
 
 @pytest.mark.parametrize("nqubits", range(1, 11))
 def test_pennylane(nqubits):
-    psi = get_rand_statevector(nqubits=nqubits)
+    psi = np.zeros(2**nqubits, dtype=complex)
+    psi[0] = 1
     op = get_rand_hamiltonian(nqubits=nqubits, num_terms=nqubits * 5)
 
     @qml.qnode(qml.device("default.qubit"))
     def circuit():
-        qml.StatePrep(psi, wires=range(nqubits))
         qml.evolve(op)
         return qml.state()
 
