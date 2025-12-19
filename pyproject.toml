@@ -13,7 +13,7 @@ authors = [{ name = "SimoneGasperini", email = "simone.gasperini4@unibo.it" }]
 dependencies = ["numpy", "scipy"]
 
 [project.optional-dependencies]
-dev = ["pennylane", "ruff", "pytest"]
+dev = ["pennylane", "ruff", "pytest", "tqdm", "memory_profiler"]
 
 [project.urls]
 Homepage = "https://github.com/SimoneGasperini/quantlop"
