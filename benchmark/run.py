@@ -59,7 +59,7 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
 
 if __name__ == "__main__":
     run_benchmark(
-        num_qubits=range(1, 12),
+        num_qubits=range(1, 13),
         time_fname="runtime.json",  # sec
         mem_fname="memory.json",  # MB
         reps=20,
