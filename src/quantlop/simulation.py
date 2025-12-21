@@ -1,7 +1,6 @@
-from functools import cache, reduce
-from operator import mul
+from functools import cache
 import numpy as np
-from scipy.sparse.linalg import onenormest
+from scipy.sparse.linalg import onenormest, matrix_power
 
 
 def evolve(ham, psi, coeff=1):
@@ -57,8 +56,7 @@ def _fragment_3_1(A, p_max=8, m_max=55):
 
 @cache
 def compute_d(A, p):
-    A_pow_p = reduce(mul, (A for _ in range(p)))
-    return onenormest(A_pow_p) ** (1 / p)
+    return onenormest(matrix_power(A, p)) ** (1 / p)
 
 
 _theta = {
