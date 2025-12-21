@@ -5,21 +5,15 @@ import scipy as sp
 from tqdm import trange
 from memory_profiler import memory_usage
 from quantlop import Hamiltonian, evolve
-from quantlop.utils import get_rand_hamiltonian
+from quantlop.utils import get_rand_hamiltonian, get_rand_statevector
 
 
-def sp_simulation(nq):
-    psi = np.zeros(2**nq, dtype=complex)
-    psi[0] = 1
-    op = get_rand_hamiltonian(nqubits=nq, num_terms=5 * nq)
+def sp_simulation(nq, op, psi):
     mat = op.matrix(range(nq))
     return sp.linalg.expm(-1j * mat) @ psi
 
 
-def qlo_simulation(nq):
-    psi = np.zeros(2**nq, dtype=complex)
-    psi[0] = 1
-    op = get_rand_hamiltonian(nqubits=nq, num_terms=5 * nq)
+def qlo_simulation(nq, op, psi):
     ham = Hamiltonian.from_pennylane(op, nqubits=nq)
     return evolve(ham, psi)
 
@@ -29,15 +23,16 @@ def runtime_and_memory(func, *args, reps, interval=0.0005):
     memory = []
     for _ in trange(reps, ncols=80):
         t1 = time.perf_counter()
-        mem = memory_usage(
+        mem, result = memory_usage(
             (func, (args), {}),
             interval=interval,
+            retval=True,
             max_iterations=1,
         )
         t2 = time.perf_counter()
         runtime.append(t2 - t1)
         memory.append(max(mem))
-    return runtime, memory
+    return runtime, memory, result
 
 
 def run_benchmark(num_qubits, time_fname, mem_fname, reps):
@@ -45,12 +40,15 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
     memory = {"scipy.expm": {}, "quantlop": {}}
     for nq in num_qubits:
         print(f"\nRunning simulation for {nq} qubits:")
-        time, mem = runtime_and_memory(sp_simulation, nq, reps=reps)
+        op = get_rand_hamiltonian(nqubits=nq, num_terms=5 * nq)
+        psi = get_rand_statevector(nqubits=nq)
+        time, mem, res1 = runtime_and_memory(sp_simulation, nq, op, psi, reps=reps)
         runtime["scipy.expm"][nq] = time
         memory["scipy.expm"][nq] = mem
-        time, mem = runtime_and_memory(qlo_simulation, nq, reps=reps)
+        time, mem, res2 = runtime_and_memory(qlo_simulation, nq, op, psi, reps=reps)
         runtime["quantlop"][nq] = time
         memory["quantlop"][nq] = mem
+        assert np.allclose(res1, res2)
         with open(time_fname, "w") as file:
             json.dump(runtime, file, indent=4)
         with open(mem_fname, "w") as file:
