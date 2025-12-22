@@ -1,6 +1,4 @@
-from functools import cache
 import numpy as np
-from scipy.sparse.linalg import onenormest, matrix_power
 
 
 def evolve(ham, psi, coeff=1):
@@ -26,37 +24,16 @@ def _expm_multiply(A, b):
     return f
 
 
-def _fragment_3_1(A, p_max=8, m_max=55):
+def _fragment_3_1(A):
     m_star = None
     s = None
-    try:
-        A_one_norm = A.lcu_norm()
-    except AttributeError:
-        A_one_norm = onenormest(A)
-    # Condition (3.13) in https://doi.org/10.1137/100788860 with l=1, n0=1
-    if A_one_norm <= 2 * _theta[m_max] / m_max * p_max * (p_max + 3):
-        for m in _theta:
-            s_m = np.ceil(A_one_norm / _theta[m])
-            if m_star is None or m * s_m < m_star * s:
-                m_star = m
-                s = s_m
-    else:
-        # Equation (3.11) in https://doi.org/10.1137/100788860
-        for p in range(2, p_max + 1):
-            alpha_p = max(compute_d(A, p), compute_d(A, p + 1))
-            for m in range(p * (p - 1) - 1, m_max + 1):
-                if m in _theta:  # why?
-                    s_m = np.ceil(alpha_p / _theta[m])
-                    if m_star is None or m * s_m < m_star * s:
-                        m_star = m
-                        s = s_m
-        s = max(s, 1)
+    A_one_norm = A.lcu_norm()
+    for m in _theta:
+        s_m = np.ceil(A_one_norm / _theta[m])
+        if m_star is None or m * s_m < m_star * s:
+            m_star = m
+            s = s_m
     return int(m_star), int(s)
-
-
-@cache
-def compute_d(A, p):
-    return onenormest(matrix_power(A, p)) ** (1 / p)
 
 
 _theta = {

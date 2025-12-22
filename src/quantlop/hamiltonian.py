@@ -1,5 +1,6 @@
 from functools import reduce
 from operator import add
+import numpy as np
 from scipy.sparse.linalg import LinearOperator
 from .pauliword import PauliWord
 
@@ -25,11 +26,20 @@ class Hamiltonian(LinearOperator):
 
     @classmethod
     def from_pennylane(cls, operator_pl, nqubits):
-        pauli_words = []
+        pws = []
         for pauliword_pl, coeff in operator_pl.pauli_rep.items():
             string = "".join([pauliword_pl.get(i, "I") for i in range(nqubits)])
-            pauli_words.append(PauliWord(coeff=coeff, string=string))
-        return cls(pauli_words)
+            pws.append(PauliWord(coeff=coeff, string=string))
+        return cls(pauli_words=pws)
+
+    def __mul__(self, k):
+        if np.isscalar(k):
+            pws = [PauliWord(k * pw.coeff, pw.string) for pw in self.pauli_words]
+            return self.__class__(pauli_words=pws)
+        raise NotImplementedError
+
+    def __rmul__(self, k):
+        return self.__mul__(k)
 
     def _matvec(self, vec):
         linop = reduce(add, self.pauli_words)
