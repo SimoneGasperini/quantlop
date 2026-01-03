@@ -1,6 +1,5 @@
 from functools import cache
 import numpy as np
-from scipy.sparse.linalg import LinearOperator
 
 
 @cache
@@ -15,13 +14,10 @@ def _yz_phase(nq):
     return y_phase, z_phase
 
 
-class PauliWord(LinearOperator):
+class PauliWord:
     def __init__(self, coeff: complex, string: str):
         self._coeff = coeff
         self._string = string
-        nq = len(string)
-        shape = (2**nq, 2**nq)
-        super().__init__(dtype=complex, shape=shape)
 
     @property
     def coeff(self):
@@ -34,14 +30,6 @@ class PauliWord(LinearOperator):
     @property
     def num_qubits(self):
         return len(self.string)
-
-    def __mul__(self, scalar):
-        if np.isscalar(scalar):
-            return self.__class__(scalar * self.coeff, self.string)
-        raise NotImplementedError
-
-    def __rmul__(self, scalar):
-        return self.__mul__(scalar)
 
     def _matvec(self, vec):
         out = vec.reshape((2,) * self.num_qubits)
