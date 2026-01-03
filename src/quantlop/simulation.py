@@ -12,12 +12,12 @@ def _expm_multiply(A, b):
     m_star, s = _fragment_3_1(A)
     f = b
     for _ in range(s):
-        c1 = np.linalg.norm(b, ord=np.inf)
+        c1 = np.max(np.abs(b))
         for j in range(1, m_star + 1):
-            b = A._matvec(b) / float(s * j)
-            c2 = np.linalg.norm(b, ord=np.inf)
+            b = A._matvec(b) / (s * j)
+            c2 = np.max(np.abs(b))
             f = f + b
-            if c1 + c2 <= tol * np.linalg.norm(f, ord=np.inf):
+            if c1 + c2 <= tol * np.max(np.abs(f)):
                 break
             c1 = c2
         b = f
@@ -28,8 +28,8 @@ def _fragment_3_1(A):
     m_star = None
     s = None
     A_one_norm = A.lcu_norm()
-    for m in _theta:
-        s_m = np.ceil(A_one_norm / _theta[m])
+    for m, theta in _theta.items():
+        s_m = np.ceil(A_one_norm / theta)
         if m_star is None or m * s_m < m_star * s:
             m_star = m
             s = s_m
