@@ -11,6 +11,7 @@ class Hamiltonian(LinearOperator):
         nq = pauli_words[0].num_qubits
         shape = (2**nq, 2**nq)
         super().__init__(dtype=complex, shape=shape)
+        self._linop = reduce(add, self.pauli_words)
 
     @property
     def pauli_words(self):
@@ -42,11 +43,7 @@ class Hamiltonian(LinearOperator):
         return self.__mul__(k)
 
     def _matvec(self, vec):
-        linop = reduce(add, self.pauli_words)
-        return linop._matvec(vec)
-
-    def _adjoint(self):
-        return self
+        return self._linop._matvec(vec)
 
     def lcu_norm(self):
         return sum(abs(coeff) for coeff in self.coeffs)
