@@ -63,7 +63,7 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
         op = get_rand_hamiltonian(nqubits=nq, num_terms=5 * nq)
         psi = np.zeros(2**nq, dtype=complex)
         psi[0] = 1
-        if nq < 14:
+        if nq < 15:
             time, mem, result1 = runtime_and_memory(
                 scipy_dense_simulation, nq, op, psi, reps=reps
             )
@@ -79,7 +79,7 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
         )
         runtime["QuantLop"][nq] = time
         memory["QuantLop"][nq] = mem
-        if nq < 14:
+        if nq < 15:
             assert np.allclose(result1, result2)
         assert np.allclose(result2, result3)
         with open(time_fname, "w") as file:
@@ -90,7 +90,7 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
 
 if __name__ == "__main__":
     run_benchmark(
-        num_qubits=range(1, 21),
+        num_qubits=range(1, 23),
         time_fname="runtime.json",  # sec
         mem_fname="memory.json",  # MB
         reps=7,
