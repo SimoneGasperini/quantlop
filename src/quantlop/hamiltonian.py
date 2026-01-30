@@ -1,11 +1,15 @@
 from functools import reduce
 from operator import add
 import numpy as np
+from scipy.sparse.linalg import LinearOperator
 from .pauliword import PauliWord
 
 
-class Hamiltonian:
+class Hamiltonian(LinearOperator):
     def __init__(self, pauli_words: list[PauliWord]):
+        nq = pauli_words[0].num_qubits
+        shape = (2**nq, 2**nq)
+        super().__init__(dtype=complex, shape=shape)
         self._pauli_words = pauli_words
 
     @property
@@ -40,5 +44,5 @@ class Hamiltonian:
     def _matvec(self, vec):
         return reduce(add, (pw._matvec(vec) for pw in self.pauli_words))
 
-    def lcu_norm(self):
-        return sum(abs(coeff) for coeff in self.coeffs)
+    def _adjoint(self):
+        return self

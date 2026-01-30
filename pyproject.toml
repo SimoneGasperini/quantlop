@@ -10,7 +10,7 @@ readme = "README.md"
 requires-python = ">=3.12"
 license = { file = "LICENSE" }
 authors = [{ name = "SimoneGasperini", email = "simone.gasperini4@unibo.it" }]
-dependencies = ["numpy"]
+dependencies = ["numpy", "scipy"]
 
 [project.optional-dependencies]
 dev = ["pennylane", "matplotlib", "ruff", "pytest", "tqdm", "memory_profiler"]
