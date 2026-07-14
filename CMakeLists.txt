@@ -30,9 +30,13 @@ target_include_directories(
 )
 
 if(QUANTLOP_BUILD_PYTHON)
-    find_package(pybind11 CONFIG REQUIRED)
+    find_package(
+        Python 3.11
+        REQUIRED COMPONENTS Interpreter Development.Module
+    )
+    find_package(nanobind CONFIG REQUIRED)
 
-    pybind11_add_module(_quantlop cpp/bindings/python_bindings.cpp)
+    nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
     target_link_libraries(_quantlop PRIVATE quantlop::core)
 
     install(

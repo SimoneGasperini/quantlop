@@ -54,7 +54,7 @@ evolved_psi = quantlop.evolve(ham, psi)
 
 ## Development
 The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
-The pybind11 extension is a thin private module named `_quantlop`.
+The nanobind extension is a thin private module named `_quantlop`.
 
 Run the Python test suite with:
 

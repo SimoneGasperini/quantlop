@@ -1,44 +1,46 @@
-#include <pybind11/complex.h>
-#include <pybind11/numpy.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <nanobind/nanobind.h>
+#include <nanobind/ndarray.h>
+#include <nanobind/stl/complex.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/vector.h>
 
 #include <quantlop/hamiltonian.hpp>
 #include <quantlop/pauliword.hpp>
 #include <quantlop/simulation.hpp>
 #include <quantlop/types.hpp>
 
-namespace py = pybind11;
+namespace nb = nanobind;
 using quantlop::Complex;
 using quantlop::Hamiltonian;
 using quantlop::PauliWord;
 using quantlop::Size;
 using quantlop::String;
 
-static py::array_t<Complex>
+using ComplexArray = nb::ndarray<const Complex, nb::ndim<1>, nb::c_contig, nb::device::cpu>;
+using NumpyComplexArray = nb::ndarray<nb::numpy, Complex, nb::ndim<1>, nb::c_contig>;
+
+static NumpyComplexArray
 evolve_py(const Hamiltonian &ham,
-          py::array_t<Complex, py::array::c_style | py::array::forcecast> psi,
+          ComplexArray psi,
           Complex coeff)
 {
-    py::buffer_info info = psi.request();
-
-    const Size dim = (info.shape[0]);
-    const auto *ptr = static_cast<const Complex *>(info.ptr);
-    Complex *out_ptr = quantlop::evolve(ham, ptr, coeff);
-    py::capsule owner(out_ptr, [](void *p)
+    const Size dim = psi.shape(0);
+    Complex *out_ptr = quantlop::evolve(ham, psi.data(), coeff);
+    nb::capsule owner(out_ptr, [](void *p) noexcept
                       { delete[] static_cast<Complex *>(p); });
-    return py::array_t<Complex>(static_cast<py::ssize_t>(dim), out_ptr, owner);
+    return NumpyComplexArray(out_ptr, {dim}, owner);
 }
 
-PYBIND11_MODULE(_quantlop, module_py)
+NB_MODULE(_quantlop, module_py)
 {
     module_py.doc() = "Quantlop C++ core bindings";
 
-    py::class_<PauliWord>(module_py, "PauliWord")
-        .def(py::init<Complex, String>(), py::arg("coeff"), py::arg("string"));
+    nb::class_<PauliWord>(module_py, "PauliWord")
+        .def(nb::init<Complex, String>(), nb::arg("coeff"), nb::arg("string"));
 
-    py::class_<Hamiltonian>(module_py, "Hamiltonian")
-        .def(py::init<std::vector<PauliWord>>(), py::arg("pauli_words"));
+    nb::class_<Hamiltonian>(module_py, "Hamiltonian")
+        .def(nb::init<std::vector<PauliWord>>(), nb::arg("pauli_words"));
 
-    module_py.def("evolve", &evolve_py, py::arg("ham"), py::arg("psi"), py::arg("coeff") = Complex(1.0, 0.0));
+    module_py.def("evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"),
+                  nb::arg("coeff") = Complex(1.0, 0.0));
 }

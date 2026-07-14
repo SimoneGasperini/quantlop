@@ -1,3 +1,5 @@
+import numpy as np
+
 from ._quantlop import Hamiltonian as _Hamiltonian
 from ._quantlop import PauliWord as _PauliWord
 from ._quantlop import evolve as _evolve
@@ -17,4 +19,4 @@ class Hamiltonian(_Hamiltonian):
 
 
 def evolve(ham, psi, coeff=1):
-    return _evolve(ham, psi, coeff)
+    return _evolve(ham, np.asarray(psi, dtype=np.complex128, order="C"), coeff)
