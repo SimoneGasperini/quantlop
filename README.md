@@ -1,13 +1,17 @@
 # quantlop
-High-performance quantum simulator for matrix-free Hamiltonian evolution
+### High-performance quantum simulator for matrix-free Hamiltonian evolution
 
-[![Build and test](https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml/badge.svg)](https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml)
-[![PyPI version](https://img.shields.io/pypi/v/quantlop.svg)](https://pypi.org/project/quantlop/)
-[![Python 3.11+](https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/github/license/SimoneGasperini/quantlop.svg)](LICENSE)
+<p align="center">
+    <img src="light_logo.png#gh-light-mode-only" alt="quantlop">
+    <img src="dark_logo.png#gh-dark-mode-only" alt="quantlop">
+</p>
 
-![quantlop](light_logo.png#gh-light-mode-only)
-![quantlop](dark_logo.png#gh-dark-mode-only)
+<p align="center">
+    <a href="https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml"><img src="https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml/badge.svg" alt="Build and test"></a>
+    <a href="https://pypi.org/project/quantlop/"><img src="https://img.shields.io/pypi/v/quantlop.svg" alt="PyPI version"></a>
+    <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg" alt="Python 3.11+"></a>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/SimoneGasperini/quantlop.svg" alt="License"></a>
+</p>
 
 
 ## Introduction
