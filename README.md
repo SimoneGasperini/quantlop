@@ -1,3 +1,12 @@
+# quantlop
+High-performance quantum simulator for matrix-free Hamiltonian evolution
+
+[![Build and test](https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml/badge.svg)](https://github.com/SimoneGasperini/quantlop/actions/workflows/ci.yml)
+[![PyPI version](https://img.shields.io/pypi/v/quantlop.svg)](https://pypi.org/project/quantlop/)
+[![Python 3.11+](https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/github/license/SimoneGasperini/quantlop.svg)](LICENSE)
+
+
 ## Introduction
 `quantlop` is a high-performance simulator for the time evolution of quantum systems whose Hamiltonians can be written as sparse sums of Pauli words.
 It integrates with [PennyLane](https://github.com/PennyLaneAI/pennylane), so Hamiltonians can be defined with familiar Python operators while the compute-intensive work runs in C++.
@@ -6,11 +15,13 @@ Rather than constructing the full Hamiltonian matrix, `quantlop` applies each Pa
 It then uses a Krylov method to numerically approximate the action of the matrix exponential.
 This matrix-free approach dramatically reduces memory usage and avoids costly dense-matrix operations, making larger simulations more practical.
 
+
 ## Installation
 The project requires Python 3.11 or later and a C++20-compatible compiler.
 ```bash
 pip install quantlop
 ```
+
 
 ## Usage example
 ```python
@@ -31,10 +42,4 @@ psi[0] = 1.0
 
 # evolve state vector
 evolved_psi = quantlop.evolve(ham, psi)
-```
-
-The function `quantlop.evolve` returns a new state vector corresponding to
-
-```math
-\lvert \psi(t) \rangle = e^{-iH}\lvert \psi(0) \rangle.
 ```
