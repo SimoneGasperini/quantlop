@@ -43,3 +43,23 @@ psi[0] = 1.0
 # evolve state vector
 evolved_psi = quantlop.evolve(ham, psi)
 ```
+
+
+## Development
+The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
+The pybind11 extension is a thin private module named `_quantlop`.
+
+Run the Python test suite with:
+
+```bash
+python -m pip install -e ".[test]"
+python -m pytest
+```
+
+Run the native C++ test suite with:
+
+```bash
+cmake -S . -B build -DQUANTLOP_BUILD_PYTHON=OFF -DBUILD_TESTING=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
+```

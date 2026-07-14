@@ -40,5 +40,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install ".[test]"
 
-      - name: Run tests
+      - name: Run Python tests
         run: python -m pytest -v
+
+      - name: Configure native tests
+        run: cmake -S . -B build -DQUANTLOP_BUILD_PYTHON=OFF -DBUILD_TESTING=ON
+
+      - name: Build native tests
+        run: cmake --build build --config Release
+
+      - name: Run native tests
+        run: ctest --test-dir build --build-config Release --output-on-failure

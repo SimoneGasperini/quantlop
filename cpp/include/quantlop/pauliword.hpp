@@ -1,6 +1,9 @@
 #pragma once
-#include "include.hpp"
-#include "matvec.hpp"
+#include <quantlop/matvec.hpp>
+#include <quantlop/types.hpp>
+
+namespace quantlop
+{
 
 class PauliWord
 {
@@ -17,3 +20,5 @@ private:
     String string;
     MatVec matvec;
 };
+
+} // namespace quantlop

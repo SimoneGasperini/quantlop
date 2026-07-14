@@ -4,8 +4,11 @@
 #include <limits>
 #include <vector>
 
-#include "hamiltonian.hpp"
-#include "simulation.hpp"
+#include <quantlop/hamiltonian.hpp>
+#include <quantlop/simulation.hpp>
+
+namespace quantlop
+{
 
 namespace
 {
@@ -361,3 +364,5 @@ Complex *expm_multiply_krylov(const Hamiltonian &ham, const Complex *psi, Comple
 
     return out;
 }
+
+} // namespace quantlop

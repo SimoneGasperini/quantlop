@@ -3,12 +3,17 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include "include.hpp"
-#include "pauliword.hpp"
-#include "hamiltonian.hpp"
-#include "simulation.hpp"
+#include <quantlop/hamiltonian.hpp>
+#include <quantlop/pauliword.hpp>
+#include <quantlop/simulation.hpp>
+#include <quantlop/types.hpp>
 
 namespace py = pybind11;
+using quantlop::Complex;
+using quantlop::Hamiltonian;
+using quantlop::PauliWord;
+using quantlop::Size;
+using quantlop::String;
 
 static py::array_t<Complex>
 evolve_py(const Hamiltonian &ham,
@@ -19,13 +24,13 @@ evolve_py(const Hamiltonian &ham,
 
     const Size dim = (info.shape[0]);
     const auto *ptr = static_cast<const Complex *>(info.ptr);
-    Complex *out_ptr = evolve(ham, ptr, coeff);
+    Complex *out_ptr = quantlop::evolve(ham, ptr, coeff);
     py::capsule owner(out_ptr, [](void *p)
                       { delete[] static_cast<Complex *>(p); });
     return py::array_t<Complex>(static_cast<py::ssize_t>(dim), out_ptr, owner);
 }
 
-PYBIND11_MODULE(quantlop_cpp, module_py)
+PYBIND11_MODULE(_quantlop, module_py)
 {
     module_py.doc() = "Quantlop C++ core bindings";
 

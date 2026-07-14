@@ -1,6 +1,9 @@
 #include <bit>
 
-#include "matvec.hpp"
+#include <quantlop/matvec.hpp>
+
+namespace quantlop
+{
 
 MatVec::MatVec(Complex c, String str)
     : coeff(c),
@@ -61,3 +64,5 @@ void MatVec::operator()(const Complex *in, Complex *out) const
         out[j] += coeff * phase * in[i];
     }
 }
+
+} // namespace quantlop

@@ -1,7 +1,10 @@
 #include <algorithm>
 #include <utility>
 
-#include "hamiltonian.hpp"
+#include <quantlop/hamiltonian.hpp>
+
+namespace quantlop
+{
 
 Hamiltonian::Hamiltonian(std::vector<PauliWord> pws)
     : pwords(std::move(pws)) {}
@@ -40,3 +43,5 @@ double Hamiltonian::lcu_norm() const
     }
     return norm;
 }
+
+} // namespace quantlop

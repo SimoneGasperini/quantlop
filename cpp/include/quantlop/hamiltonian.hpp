@@ -1,8 +1,11 @@
 #pragma once
 #include <vector>
 
-#include "include.hpp"
-#include "pauliword.hpp"
+#include <quantlop/pauliword.hpp>
+#include <quantlop/types.hpp>
+
+namespace quantlop
+{
 
 class Hamiltonian
 {
@@ -17,3 +20,5 @@ public:
 private:
     std::vector<PauliWord> pwords;
 };
+
+} // namespace quantlop
