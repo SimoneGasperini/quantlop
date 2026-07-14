@@ -5,14 +5,15 @@ build-backend = "scikit_build_core.build"
 [project]
 name = "quantlop"
 version = "0.0.1"
+description = "High-performance quantum simulator for matrix-free Hamiltonian evolution"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 keywords = [
+    "quantum-computing",
     "hamiltonian-simulation",
     "krylov-methods",
-    "quantum-computing",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
