@@ -6,6 +6,9 @@ High-performance quantum simulator for matrix-free Hamiltonian evolution
 [![Python 3.11+](https://img.shields.io/badge/python-%E2%89%A53.11-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/github/license/SimoneGasperini/quantlop.svg)](LICENSE)
 
+![quantlop](light_logo.png#gh-light-mode-only)
+![quantlop](dark_logo.png#gh-dark-mode-only)
+
 
 ## Introduction
 `quantlop` is a high-performance simulator for the time evolution of quantum systems whose Hamiltonians can be written as sparse sums of Pauli words.
