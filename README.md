@@ -34,6 +34,7 @@ evolved_psi = quantlop.evolve(ham, psi)
 ```
 
 The function `quantlop.evolve` returns a new state vector corresponding to
-$$
+
+```math
 \lvert \psi(t) \rangle = e^{-iH}\lvert \psi(0) \rangle.
-$$
+```
