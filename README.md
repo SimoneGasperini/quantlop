@@ -29,6 +29,13 @@ The project requires Python 3.11 or later and a C++20-compatible compiler.
 pip install quantlop
 ```
 
+On macOS, install the OpenMP runtime before installing `quantlop`:
+
+```bash
+brew install libomp
+pip install quantlop
+```
+
 
 ## Usage example
 ```python
