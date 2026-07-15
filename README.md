@@ -82,3 +82,8 @@ cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
+
+Install the pre-commit hook to format Python and C++ files automatically:
+```bash
+pre-commit install
+```
