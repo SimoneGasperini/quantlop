@@ -1,5 +1,8 @@
 #pragma once
-#include "include.hpp"
+#include <quantlop/types.hpp>
+
+namespace quantlop
+{
 
 class MatVec
 {
@@ -12,3 +15,5 @@ private:
     String string;
     Mask flip_mask, y_mask, z_mask;
 };
+
+} // namespace quantlop

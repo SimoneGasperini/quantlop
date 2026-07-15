@@ -1,11 +1,17 @@
-#include <bit>
+#pragma once
+
 #include <complex>
-#include <string>
-#include <vector>
+#include <cstddef>
 #include <cstdint>
+#include <string>
+
+namespace quantlop
+{
 
 using Index = std::size_t;
 using Size = std::size_t;
 using Mask = std::uint64_t;
 using String = std::string;
 using Complex = std::complex<double>;
+
+} // namespace quantlop

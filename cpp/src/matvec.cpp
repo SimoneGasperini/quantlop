@@ -1,11 +1,9 @@
-#include "matvec.hpp"
-#ifdef _OPENMP
-  #include <omp.h>
-#warning "OpenMP enabled"
-#else
-#warning "OpenMP disabled"
-#endif
+#include <omp.h>
+#include <bit>
+#include <quantlop/matvec.hpp>
 
+namespace quantlop
+{
 MatVec::MatVec(Complex c, String str)
     : coeff(c),
       string(str),
@@ -40,9 +38,7 @@ void MatVec::operator()(const Complex *in, Complex *out) const
     const Complex I(0.0, 1.0);
     const Size dim = Size(1) << string.size();
     const int y_count = std::popcount(y_mask);
-    #ifdef _OPENMP
-    #pragma omp parallel for schedule(static)
-    #endif
+
     for (Index i = 0; i < dim; ++i)
     {
         const Mask j = Mask(i) ^ flip_mask;
@@ -68,3 +64,38 @@ void MatVec::operator()(const Complex *in, Complex *out) const
         out[j] += coeff * phase * in[i];
     }
 }
+
+void MatVec::operator()(const Complex *in, Complex *out, unsigned int num_threads = 1) const
+{
+    const Complex I(0.0, 1.0);
+    const Size dim = Size(1) << string.size();
+    const int y_count = std::popcount(y_mask);
+
+    #pragma omp parallel for num_threads(num_threads) schedule(static)
+    for (Index i = 0; i < dim; ++i)
+    {
+        const Mask j = Mask(i) ^ flip_mask;
+        const Mask yz_mask = y_mask | z_mask;
+        const int parity = std::popcount(yz_mask & i) & 1;
+        Complex phase;
+        switch (y_count & 3)
+        {
+        case 0:
+            phase = 1;
+            break;
+        case 1:
+            phase = I;
+            break;
+        case 2:
+            phase = -1;
+            break;
+        default:
+            phase = -I;
+            break;
+        }
+        phase = parity ? -phase : phase;
+        out[j] += coeff * phase * in[i];
+    }
+}
+
+} // namespace quantlop

@@ -1,13 +1,57 @@
 [build-system]
-requires = ["scikit-build-core>=0.8", "pybind11>=2.11", "wheel"]
+requires = ["scikit-build-core>=0.11", "nanobind"]
 build-backend = "scikit_build_core.build"
 
 [project]
 name = "quantlop"
-version = "0.0.2"
-description = "Quantlop C++ bindings"
-requires-python = ">=3.10"
+version = "0.0.1"
+description = "High-performance quantum simulator for matrix-free Hamiltonian evolution"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pennylane",
+]
+keywords = [
+    "quantum-computing",
+    "hamiltonian-simulation",
+    "krylov-methods",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Physics",
+]
+
+[project.optional-dependencies]
+test = [
+    "scipy",
+    "pytest",
+]
+benchmark = [
+    "matplotlib",
+    "memory-profiler",
+    "scipy",
+    "tqdm",
+]
+
+[project.urls]
+Homepage = "https://github.com/SimoneGasperini/quantlop"
+Issues = "https://github.com/SimoneGasperini/quantlop/issues"
+Repository = "https://github.com/SimoneGasperini/quantlop.git"
 
 [tool.scikit-build]
-cmake.minimum-version = "3.18"
+minimum-version = "build-system.requires"
+cmake.version = ">=3.18"
 wheel.packages = ["python/quantlop"]
+
+[tool.pytest.ini_options]
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+]
+testpaths = ["tests/python"]

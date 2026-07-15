@@ -1,4 +1,7 @@
-#include "pauliword.hpp"
+#include <quantlop/pauliword.hpp>
+
+namespace quantlop
+{
 
 PauliWord::PauliWord(Complex c, String str)
     : coeff(c),
@@ -10,3 +13,5 @@ Size PauliWord::num_qubits() const { return string.size(); }
 PauliWord PauliWord::operator*(Complex c) const { return PauliWord(coeff * c, string); }
 
 PauliWord operator*(Complex c, const PauliWord &pw) { return pw * c; }
+
+} // namespace quantlop
