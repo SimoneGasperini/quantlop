@@ -74,7 +74,7 @@ The nanobind extension is a thin private module named `_quantlop`.
 Run the Python test suite with:
 
 ```bash
-python -m pip install -e ".[test]" nanobind
+python -m pip install -e ".[test]"
 python -m pytest -v
 ```
 
