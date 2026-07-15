@@ -39,7 +39,7 @@ void MatVec::operator()(const Complex *in, Complex *out) const
     const Size dim = Size(1) << string.size();
     const int y_count = std::popcount(y_mask);
 
-    for (Index i = 0; i < dim; ++i)
+    for (int i = 0; i < dim; ++i)
     {
         const Mask j = Mask(i) ^ flip_mask;
         const Mask yz_mask = y_mask | z_mask;
@@ -72,7 +72,7 @@ void MatVec::operator()(const Complex *in, Complex *out, const int num_threads) 
     const int y_count = std::popcount(y_mask);
 
     #pragma omp parallel for num_threads(num_threads) schedule(static)
-    for (Index i = 0; i < dim; ++i)
+    for (int i = 0; i < dim; ++i)
     {
         const Mask j = Mask(i) ^ flip_mask;
         const Mask yz_mask = y_mask | z_mask;
