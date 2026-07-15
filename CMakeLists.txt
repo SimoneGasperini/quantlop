@@ -35,7 +35,12 @@ find_package(
     REQUIRED COMPONENTS Interpreter Development.Module
 )
 
-execute_process(COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir)
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+    RESULT_VARIABLE NANOBIND_CMAKE_DIR_RESULT
+    OUTPUT_VARIABLE nanobind_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
