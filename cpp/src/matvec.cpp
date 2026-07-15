@@ -65,7 +65,7 @@ void MatVec::operator()(const Complex *in, Complex *out) const
     }
 }
 
-void MatVec::operator()(const Complex *in, Complex *out, unsigned int num_threads = 1) const
+void MatVec::operator()(const Complex *in, Complex *out, unsigned int num_threads) const
 {
     const Complex I(0.0, 1.0);
     const Size dim = Size(1) << string.size();
