@@ -34,6 +34,8 @@ find_package(
     Python 3.11
     REQUIRED COMPONENTS Interpreter Development.Module
 )
+
+execute_process(COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir)
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
