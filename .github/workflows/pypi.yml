@@ -82,7 +82,7 @@ jobs:
           CIBW_ARCHS: ${{ matrix.architectures }}
           CIBW_SKIP: "*-musllinux_*"
           CIBW_TEST_COMMAND: >
-            python -c "import quantlop;
+            python -c "import quantlop"
           CIBW_TEST_REQUIRES: "pennylane"
         with:
           output-dir: wheelhouse
