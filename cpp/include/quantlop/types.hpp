@@ -14,4 +14,4 @@ using Mask = std::uint64_t;
 using String = std::string;
 using Complex = std::complex<double>;
 
-} // namespace quantlop
+}

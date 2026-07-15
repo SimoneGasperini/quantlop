@@ -1,3 +1,4 @@
+import os
 import numpy as np
 
 from ._quantlop import Hamiltonian as _Hamiltonian
@@ -18,5 +19,10 @@ class Hamiltonian(_Hamiltonian):
         return cls(pauli_words=pws)
 
 
-def evolve(ham, psi, coeff=1):
-    return _evolve(ham, np.asarray(psi, dtype=np.complex128, order="C"), coeff)
+def evolve(ham, psi, coeff=1, num_threads=None):
+    if num_threads is None:
+        num_threads = 0
+    if num_threads == "auto":
+        num_threads = os.cpu_count()
+    state = np.asarray(psi, dtype=np.complex128, order="C")
+    return _evolve(ham, state, coeff, num_threads)

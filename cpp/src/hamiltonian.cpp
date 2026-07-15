@@ -21,6 +21,16 @@ void Hamiltonian::matvec_into(const Complex *in, Complex *out) const
     }
 }
 
+void Hamiltonian::matvec_into(const Complex *in, Complex *out, int num_threads) const
+{
+    Size dim = Size(1) << num_qubits();
+    std::fill(out, out + dim, 0.0);
+    for (const PauliWord &pw : pwords)
+    {
+        pw.matvec(in, out, num_threads);
+    }
+}
+
 Hamiltonian Hamiltonian::operator*(Complex c) const
 {
     std::vector<PauliWord> pws;
@@ -44,4 +54,4 @@ double Hamiltonian::lcu_norm() const
     return norm;
 }
 
-} // namespace quantlop
+}

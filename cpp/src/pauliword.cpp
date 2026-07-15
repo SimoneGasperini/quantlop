@@ -14,4 +14,4 @@ PauliWord PauliWord::operator*(Complex c) const { return PauliWord(coeff * c, st
 
 PauliWord operator*(Complex c, const PauliWord &pw) { return pw * c; }
 
-} // namespace quantlop
+}

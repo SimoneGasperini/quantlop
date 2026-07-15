@@ -22,10 +22,11 @@ using NumpyComplexArray = nb::ndarray<nb::numpy, Complex, nb::ndim<1>, nb::c_con
 static NumpyComplexArray
 evolve_py(const Hamiltonian &ham,
           ComplexArray psi,
-          Complex coeff)
+          Complex coeff,
+          int num_threads)
 {
     const Size dim = psi.shape(0);
-    Complex *out_ptr = quantlop::evolve(ham, psi.data(), coeff);
+    Complex *out_ptr = quantlop::evolve(ham, psi.data(), coeff, num_threads);
     nb::capsule owner(out_ptr, [](void *p) noexcept
                       { delete[] static_cast<Complex *>(p); });
     return NumpyComplexArray(out_ptr, {dim}, owner);
@@ -42,5 +43,5 @@ NB_MODULE(_quantlop, module_py)
         .def(nb::init<std::vector<PauliWord>>(), nb::arg("pauli_words"));
 
     module_py.def("evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"),
-                  nb::arg("coeff") = Complex(1.0, 0.0));
+                  nb::arg("coeff"), nb::arg("num_threads"));
 }

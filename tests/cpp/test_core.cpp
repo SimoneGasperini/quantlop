@@ -26,7 +26,7 @@ void require(bool condition, const char *message)
     }
 }
 
-} // namespace
+}
 
 int main()
 {
@@ -44,7 +44,7 @@ int main()
     require(close(applied[1], 1.0), "unexpected |1> matvec amplitude");
 
     const auto evolved = std::unique_ptr<Complex[]>(
-        quantlop::evolve(hamiltonian, initial.data(), std::numbers::pi / 2.0));
+        quantlop::evolve(hamiltonian, initial.data(), std::numbers::pi / 2.0, 0));
     require(close(evolved[0], 0.0), "unexpected |0> evolved amplitude");
     require(close(evolved[1], Complex(0.0, -1.0)), "unexpected |1> evolved amplitude");
 

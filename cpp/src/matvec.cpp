@@ -98,4 +98,4 @@ void MatVec::operator()(const Complex *in, Complex *out, const int num_threads) 
     }
 }
 
-} // namespace quantlop
+}

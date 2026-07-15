@@ -59,6 +59,14 @@ evolved_psi = quantlop.evolve(ham, psi)
 ```
 
 
+## Multi-threading
+Evolution is serial by default.
+Set `num_threads` to a positive integer to use that many OpenMP threads, or to `"auto"` to use the CPU count reported by the operating system:
+```python
+evolved_psi = quantlop.evolve(ham, psi, num_threads="auto")
+```
+
+
 ## Development
 The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
 The nanobind extension is a thin private module named `_quantlop`.

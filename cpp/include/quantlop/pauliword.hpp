@@ -21,4 +21,4 @@ private:
     MatVec matvec;
 };
 
-} // namespace quantlop
+}

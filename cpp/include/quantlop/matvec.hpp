@@ -17,4 +17,4 @@ private:
     Mask flip_mask, y_mask, z_mask;
 };
 
-} // namespace quantlop
+}
