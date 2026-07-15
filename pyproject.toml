@@ -11,8 +11,9 @@ license = "Apache-2.0"
 license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
-    "nanobind",
     "pennylane",
+    "nanobind",
+    "pytest",
 ]
 keywords = [
     "quantum-computing",
@@ -28,15 +29,12 @@ classifiers = [
 ]
 
 [project.optional-dependencies]
-test = [
+dev = [
     "scipy",
-    "pytest",
-]
-benchmark = [
-    "matplotlib",
-    "memory-profiler",
-    "scipy",
+    "ruff",
     "tqdm",
+    "memory-profiler",
+    "matplotlib",
 ]
 
 [project.urls]
@@ -55,3 +53,13 @@ addopts = [
     "--strict-markers",
 ]
 testpaths = ["tests/python"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"
+quote-style = "double"
+skip-magic-trailing-comma = false

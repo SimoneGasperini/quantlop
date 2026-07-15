@@ -72,19 +72,13 @@ def run_benchmark(num_qubits, time_fname, mem_fname, reps):
         psi = np.zeros(2**nq, dtype=complex)
         psi[0] = 1
         if nq < 13:
-            time, mem, result1 = runtime_and_memory(
-                scipy_dense_simulation, nq, op, psi, reps=reps
-            )
+            time, mem, result1 = runtime_and_memory(scipy_dense_simulation, nq, op, psi, reps=reps)
             runtime["SciPy dense"][nq] = time
             memory["SciPy dense"][nq] = mem
-        time, mem, result2 = runtime_and_memory(
-            scipy_sparse_simulation, nq, op, psi, reps=reps
-        )
+        time, mem, result2 = runtime_and_memory(scipy_sparse_simulation, nq, op, psi, reps=reps)
         runtime["SciPy sparse"][nq] = time
         memory["SciPy sparse"][nq] = mem
-        time, mem, result3 = runtime_and_memory(
-            quantlop_simulation, nq, op, psi, reps=reps
-        )
+        time, mem, result3 = runtime_and_memory(quantlop_simulation, nq, op, psi, reps=reps)
         runtime["QuantLop"][nq] = time
         memory["QuantLop"][nq] = mem
         if nq < 13:
