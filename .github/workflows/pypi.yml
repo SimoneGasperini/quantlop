@@ -112,12 +112,16 @@ jobs:
       id-token: write
 
     steps:
-      - name: Download all distribution artifacts
+      - name: Download source distribution
         uses: actions/download-artifact@v6
         with:
-          pattern: |
-            source-distribution
-            wheels-*
+          name: source-distribution
+          path: dist
+
+      - name: Download wheels
+        uses: actions/download-artifact@v6
+        with:
+          pattern: wheels-*
           path: dist
           merge-multiple: true
 
