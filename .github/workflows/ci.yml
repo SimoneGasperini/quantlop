@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   format:
-    name: Ruff format
+    name: Code format
     runs-on: ubuntu-latest
 
     steps:
@@ -27,6 +27,17 @@ jobs:
 
       - name: Check Python formatting
         run: python -m ruff format --check .
+
+      - name: Install ClangFormat
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang-format
+
+      - name: Check C++ formatting
+        run: >-
+          find cpp tests/cpp -type f
+          \( -name '*.cpp' -o -name '*.hpp' \)
+          -print0 | xargs -0 clang-format --dry-run --Werror
 
   build-and-test:
     name: ${{ matrix.os }} / Python ${{ matrix.python-version }}

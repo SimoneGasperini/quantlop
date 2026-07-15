@@ -6,7 +6,9 @@ namespace quantlop
 PauliWord::PauliWord(Complex c, String str)
     : coeff(c),
       string(str),
-      matvec(c, str) {}
+      matvec(c, str)
+{
+}
 
 Size PauliWord::num_qubits() const { return string.size(); }
 

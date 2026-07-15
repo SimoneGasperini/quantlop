@@ -1,5 +1,5 @@
-#include <omp.h>
 #include <bit>
+#include <omp.h>
 #include <quantlop/matvec.hpp>
 
 namespace quantlop
@@ -71,7 +71,7 @@ void MatVec::operator()(const Complex *in, Complex *out, const int num_threads) 
     const Size dim = Size(1) << string.size();
     const int y_count = std::popcount(y_mask);
 
-    #pragma omp parallel for num_threads(num_threads) schedule(static)
+#pragma omp parallel for num_threads(num_threads) schedule(static)
     for (int i = 0; i < dim; ++i)
     {
         const Mask j = Mask(i) ^ flip_mask;

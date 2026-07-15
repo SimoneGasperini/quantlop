@@ -1,0 +1,22 @@
+---
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+---
+Language: Cpp
+BasedOnStyle: LLVM
+Standard: c++20
+
+IndentWidth: 4
+ContinuationIndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 120
+UseTab: Never
+NamespaceIndentation: Inner
+
+BreakBeforeBraces: Allman
+BreakConstructorInitializers: BeforeColon
+PackConstructorInitializers: Never
+AllowShortFunctionsOnASingleLine: All
+
+PointerAlignment: Right
+ReferenceAlignment: Right
+FixNamespaceComments: false

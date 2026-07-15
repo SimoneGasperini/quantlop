@@ -7,7 +7,9 @@ namespace quantlop
 {
 
 Hamiltonian::Hamiltonian(std::vector<PauliWord> pws)
-    : pwords(std::move(pws)) {}
+    : pwords(std::move(pws))
+{
+}
 
 Size Hamiltonian::num_qubits() const { return pwords.front().num_qubits(); }
 
