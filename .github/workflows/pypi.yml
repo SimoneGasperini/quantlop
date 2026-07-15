@@ -64,38 +64,26 @@ jobs:
         uses: actions/checkout@v6
         with:
           persist-credentials: false
-          
+
       - name: Install libomp
         if: runner.os == 'macOS'
         shell: bash
         run: |
           brew install libomp
-      
           PREFIX=$(brew --prefix libomp)
-      
           echo "CPPFLAGS=-I$PREFIX/include" >> "$GITHUB_ENV"
           echo "LDFLAGS=-L$PREFIX/lib" >> "$GITHUB_ENV"
           echo "CMAKE_PREFIX_PATH=$PREFIX" >> "$GITHUB_ENV"
-          
+
       - name: Build wheels
         uses: pypa/cibuildwheel@v4.1.0
         env:
-          # Build wheels for CPython 3.11, 3.12, and 3.13.
-          CIBW_BUILD: "cp311-* cp312-* cp313-*"
-
-          # Build only the architectures selected in the matrix.
+          CIBW_BUILD: "cp311-* cp312-* cp313-* cp314-*"
           CIBW_ARCHS: ${{ matrix.architectures }}
-
-          # Do not build Alpine/musl wheels.
           CIBW_SKIP: "*-musllinux_*"
-
-          # Test the installed wheel rather than the source directory.
           CIBW_TEST_COMMAND: >
             python -c "import quantlop;
-            print('quantlop imported successfully from:', quantlop.__file__)"
-
           CIBW_TEST_REQUIRES: "pennylane"
-
         with:
           output-dir: wheelhouse
 
