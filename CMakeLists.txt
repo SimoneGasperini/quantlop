@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 3.18)
 
 project(quantlop VERSION 0.0.1 LANGUAGES CXX)
 
-option(QUANTLOP_BUILD_PYTHON "Build the Python extension" ON)
-option(BUILD_TESTING "Build the native C++ tests" OFF)
+find_package(OpenMP REQUIRED)
 
 add_library(
     quantlop_core STATIC
@@ -14,6 +13,8 @@ add_library(
     cpp/src/simulation.cpp
 )
 add_library(quantlop::core ALIAS quantlop_core)
+
+target_link_libraries(quantlop_core PRIVATE OpenMP::OpenMP_CXX)
 
 target_compile_features(quantlop_core PUBLIC cxx_std_20)
 set_target_properties(
@@ -29,27 +30,30 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
 )
 
-if(QUANTLOP_BUILD_PYTHON)
-    find_package(
-        Python 3.11
-        REQUIRED COMPONENTS Interpreter Development.Module
-    )
-    find_package(nanobind CONFIG REQUIRED)
+find_package(
+    Python 3.11
+    REQUIRED COMPONENTS Interpreter Development.Module
+)
 
-    nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
-    target_link_libraries(_quantlop PRIVATE quantlop::core)
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+    RESULT_VARIABLE NANOBIND_CMAKE_DIR_RESULT
+    OUTPUT_VARIABLE nanobind_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+find_package(nanobind CONFIG REQUIRED)
 
-    install(
-        TARGETS _quantlop
-        LIBRARY DESTINATION quantlop
-        RUNTIME DESTINATION quantlop
-    )
-endif()
+nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
+target_link_libraries(_quantlop PRIVATE quantlop::core)
 
-if(BUILD_TESTING)
-    enable_testing()
+install(
+    TARGETS _quantlop
+    LIBRARY DESTINATION quantlop
+    RUNTIME DESTINATION quantlop
+)
 
-    add_executable(quantlop_core_tests tests/cpp/test_core.cpp)
-    target_link_libraries(quantlop_core_tests PRIVATE quantlop::core)
-    add_test(NAME quantlop_core_tests COMMAND quantlop_core_tests)
-endif()
+enable_testing()
+
+add_executable(quantlop_core_tests tests/cpp/test_core.cpp)
+target_link_libraries(quantlop_core_tests PRIVATE quantlop::core)
+add_test(NAME quantlop_core_tests COMMAND quantlop_core_tests)

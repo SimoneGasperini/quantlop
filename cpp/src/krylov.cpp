@@ -235,7 +235,8 @@ namespace
         const Complex *psi,
         double bnorm,
         std::vector<Complex> &T,
-        Size m)
+        Size m,
+        int num_threads)
     {
         const Size dim = Size(1) << ham.num_qubits();
         const double norm_tol = std::numeric_limits<double>::epsilon() * 1e2;
@@ -251,7 +252,14 @@ namespace
 
         for (Index k = 0; k < m; ++k)
         {
-            ham.matvec_into(curr.data(), w.data());
+            if (num_threads == 0)
+            {
+                ham.matvec_into(curr.data(), w.data());
+            }
+            else
+            {
+                ham.matvec_into(curr.data(), w.data(), num_threads);
+            }
 
             if (k > 0)
             {
@@ -300,7 +308,8 @@ namespace
         const std::vector<Complex> &T,
         Size basis_size,
         Complex coeff,
-        Complex *out)
+        Complex *out,
+        int num_threads)
     {
         const Size dim = Size(1) << ham.num_qubits();
         std::vector<Complex> prev(dim, Complex(0.0, 0.0));
@@ -324,7 +333,14 @@ namespace
         {
             const double beta_prev = T[(k - 1) * basis_size + k].real();
             const Complex alpha_prev = T[(k - 1) * basis_size + (k - 1)];
-            ham.matvec_into(curr.data(), w.data());
+            if (num_threads == 0)
+            {
+                ham.matvec_into(curr.data(), w.data());
+            }
+            else
+            {
+                ham.matvec_into(curr.data(), w.data(), num_threads);
+            }
 
             for (Index row = 0; row < dim; ++row)
             {
@@ -349,7 +365,8 @@ namespace
     }
 }
 
-Complex *expm_multiply_krylov(const Hamiltonian &ham, const Complex *psi, Complex coeff)
+Complex *expm_multiply_krylov(
+    const Hamiltonian &ham, const Complex *psi, Complex coeff, int num_threads)
 {
     const Size dim = Size(1) << ham.num_qubits();
     Complex *out = new Complex[dim];
@@ -359,10 +376,10 @@ Complex *expm_multiply_krylov(const Hamiltonian &ham, const Complex *psi, Comple
     const Size m = std::min<Size>(30, dim);
 
     std::vector<Complex> T(m * m, Complex(0.0, 0.0));
-    const Size basis_size = build_lanczos_tridiagonal(ham, psi, bnorm, T, m);
-    reconstruct_lanczos_state(ham, psi, bnorm, T, basis_size, coeff, out);
+    const Size basis_size = build_lanczos_tridiagonal(ham, psi, bnorm, T, m, num_threads);
+    reconstruct_lanczos_state(ham, psi, bnorm, T, basis_size, coeff, out, num_threads);
 
     return out;
 }
 
-} // namespace quantlop
+}

@@ -9,6 +9,7 @@ class MatVec
 public:
     MatVec(Complex c, String str);
     void operator()(const Complex *in, Complex *out) const;
+    void operator()(const Complex *in, Complex *out, const int num_threads) const;
 
 private:
     Complex coeff;
@@ -16,4 +17,4 @@ private:
     Mask flip_mask, y_mask, z_mask;
 };
 
-} // namespace quantlop
+}

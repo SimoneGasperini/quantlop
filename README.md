@@ -29,6 +29,13 @@ The project requires Python 3.11 or later and a C++20-compatible compiler.
 pip install quantlop
 ```
 
+On macOS, install the OpenMP runtime before installing `quantlop`:
+
+```bash
+brew install libomp
+pip install quantlop
+```
+
 
 ## Usage example
 ```python
@@ -52,6 +59,14 @@ evolved_psi = quantlop.evolve(ham, psi)
 ```
 
 
+## Multi-threading
+Evolution is serial by default.
+Set `num_threads` to a positive integer to use that many OpenMP threads, or to `"auto"` to use the CPU count reported by the operating system:
+```python
+evolved_psi = quantlop.evolve(ham, psi, num_threads="auto")
+```
+
+
 ## Development
 The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
 The nanobind extension is a thin private module named `_quantlop`.
@@ -60,13 +75,13 @@ Run the Python test suite with:
 
 ```bash
 python -m pip install -e ".[test]"
-python -m pytest
+python -m pytest -v
 ```
 
 Run the native C++ test suite with:
 
 ```bash
-cmake -S . -B build -DQUANTLOP_BUILD_PYTHON=OFF -DBUILD_TESTING=ON
+cmake -S . -B build
 cmake --build build
 ctest --test-dir build --output-on-failure
 ```
