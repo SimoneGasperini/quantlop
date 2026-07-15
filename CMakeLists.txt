@@ -2,9 +2,6 @@ cmake_minimum_required(VERSION 3.18)
 
 project(quantlop VERSION 0.0.1 LANGUAGES CXX)
 
-option(QUANTLOP_BUILD_PYTHON "Build the Python extension" ON)
-option(BUILD_TESTING "Build the native C++ tests" OFF)
-
 find_package(OpenMP REQUIRED)
 
 add_library(
@@ -33,27 +30,23 @@ target_include_directories(
         $<INSTALL_INTERFACE:include>
 )
 
-if(QUANTLOP_BUILD_PYTHON)
-    find_package(
-        Python 3.11
-        REQUIRED COMPONENTS Interpreter Development.Module
-    )
-    find_package(nanobind CONFIG REQUIRED)
+find_package(
+    Python 3.11
+    REQUIRED COMPONENTS Interpreter Development.Module
+)
+find_package(nanobind CONFIG REQUIRED)
 
-    nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
-    target_link_libraries(_quantlop PRIVATE quantlop::core)
+nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
+target_link_libraries(_quantlop PRIVATE quantlop::core)
 
-    install(
-        TARGETS _quantlop
-        LIBRARY DESTINATION quantlop
-        RUNTIME DESTINATION quantlop
-    )
-endif()
+install(
+    TARGETS _quantlop
+    LIBRARY DESTINATION quantlop
+    RUNTIME DESTINATION quantlop
+)
 
-if(BUILD_TESTING)
-    enable_testing()
+enable_testing()
 
-    add_executable(quantlop_core_tests tests/cpp/test_core.cpp)
-    target_link_libraries(quantlop_core_tests PRIVATE quantlop::core)
-    add_test(NAME quantlop_core_tests COMMAND quantlop_core_tests)
-endif()
+add_executable(quantlop_core_tests tests/cpp/test_core.cpp)
+target_link_libraries(quantlop_core_tests PRIVATE quantlop::core)
+add_test(NAME quantlop_core_tests COMMAND quantlop_core_tests)
