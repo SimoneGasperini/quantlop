@@ -55,7 +55,7 @@ jobs:
             artifact-name: wheels-windows-x86-64
             architectures: AMD64
 
-          - os: macos-latest
+          - os: macos-15
             artifact-name: wheels-macos
             architectures: arm64
 
@@ -80,6 +80,7 @@ jobs:
         env:
           CIBW_BUILD: "cp311-* cp312-* cp313-* cp314-*"
           CIBW_ARCHS: ${{ matrix.architectures }}
+          CIBW_ENVIRONMENT_MACOS: "MACOSX_DEPLOYMENT_TARGET=15.0"
           CIBW_SKIP: "*-musllinux_*"
           CIBW_TEST_COMMAND: >
             python -c "import quantlop"
