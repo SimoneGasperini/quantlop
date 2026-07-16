@@ -16,7 +16,6 @@
 
 ## Introduction
 `quantlop` is a high-performance simulator for the time evolution of quantum systems whose Hamiltonians can be written as sparse sums of Pauli words.
-It integrates with [PennyLane](https://github.com/PennyLaneAI/pennylane), so Hamiltonians can be defined with familiar Python operators while the compute-intensive work runs in C++.
 
 Rather than constructing the full Hamiltonian matrix, `quantlop` applies each Pauli word as a linear operator directly to the state vector.
 It then uses a Krylov method to numerically approximate the action of the matrix exponential.
@@ -40,22 +39,24 @@ pip install quantlop
 ## Usage example
 ```python
 import numpy as np
-import pennylane as qp
-import quantlop
+import quantlop as ql
 
 # set number of qubits
-nq = 3
+num_qubits = 3
 
 # define Hamiltonian in Pauli basis
-op = 0.5 * qp.Z(0) @ qp.Z(1) + 0.2 * qp.Y(0) @ qp.X(2)
-ham = quantlop.Hamiltonian.from_pennylane(op, nq)
+pauli_words = [
+    ql.PauliWord(coeff=0.5, string="ZZI"),
+    ql.PauliWord(coeff=0.2, string="YIX"),
+]
+ham = ql.Hamiltonian(pauli_words=pauli_words)
 
 # prepare initial state vector
-psi = np.zeros(2**nq, dtype=complex)
+psi = np.zeros(2**num_qubits, dtype=complex)
 psi[0] = 1.0
 
 # evolve state vector
-evolved_psi = quantlop.evolve(ham, psi)
+evolved_psi = ql.evolve(ham, psi)
 ```
 
 
