@@ -1,22 +1,9 @@
 import os
 import numpy as np
 
-from ._quantlop import Hamiltonian as _Hamiltonian
-from ._quantlop import PauliWord as _PauliWord
+from .pauliword import PauliWord
+from .hamiltonian import Hamiltonian
 from ._quantlop import evolve as _evolve
-from .utils import get_rand_hamiltonian
-
-__all__ = ["Hamiltonian", "evolve", "get_rand_hamiltonian"]
-
-
-class Hamiltonian(_Hamiltonian):
-    @classmethod
-    def from_pennylane(cls, operator_pl, num_qubits):
-        pws = []
-        for pauliword_pl, coeff in operator_pl.pauli_rep.items():
-            string = "".join(pauliword_pl.get(i, "I") for i in range(num_qubits))
-            pws.append(_PauliWord(coeff=coeff, string=string))
-        return cls(pauli_words=pws)
 
 
 def evolve(ham, psi, coeff=1, num_threads=None):
@@ -25,4 +12,4 @@ def evolve(ham, psi, coeff=1, num_threads=None):
     if num_threads == "auto":
         num_threads = os.cpu_count()
     state = np.asarray(psi, dtype=np.complex128, order="C")
-    return _evolve(ham, state, coeff, num_threads)
+    return _evolve(ham._native, state, coeff, num_threads)
