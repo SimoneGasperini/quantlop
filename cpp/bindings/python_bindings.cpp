@@ -30,7 +30,18 @@ static NumpyComplexArray evolve_py(const Hamiltonian &ham, ComplexArray psi, Com
 NB_MODULE(_quantlop, module_py)
 {
     module_py.doc() = "Quantlop C++ core bindings";
-    nb::class_<PauliWord>(module_py, "PauliWord").def(nb::init<Complex, String>(), nb::arg("coeff"), nb::arg("string"));
-    nb::class_<Hamiltonian>(module_py, "Hamiltonian").def(nb::init<std::vector<PauliWord>>(), nb::arg("pauli_words"));
-    module_py.def("evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"), nb::arg("coeff"), nb::arg("num_threads"));
+
+    nb::class_<PauliWord>(module_py, "_PauliWord")
+        .def(nb::init<Complex, String>(), nb::arg("coeff"), nb::arg("string"))
+        .def("_num_qubits", &PauliWord::num_qubits)
+        .def("_get_coeff", &PauliWord::get_coeff)
+        .def("_get_string", &PauliWord::get_string);
+
+    nb::class_<Hamiltonian>(module_py, "_Hamiltonian")
+        .def(nb::init<std::vector<PauliWord>>(), nb::arg("pwords"))
+        .def("_num_qubits", &Hamiltonian::num_qubits)
+        .def("_num_terms", &Hamiltonian::num_terms)
+        .def("_get_pwords", &Hamiltonian::get_pwords);
+
+    module_py.def("_evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"), nb::arg("coeff"), nb::arg("num_threads"));
 }

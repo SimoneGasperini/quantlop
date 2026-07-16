@@ -11,8 +11,6 @@ Hamiltonian::Hamiltonian(std::vector<PauliWord> pws)
 {
 }
 
-Size Hamiltonian::num_qubits() const { return pwords.front().num_qubits(); }
-
 void Hamiltonian::matvec_into(const Complex *in, Complex *out) const
 {
     Size dim = Size(1) << num_qubits();
@@ -55,5 +53,11 @@ double Hamiltonian::lcu_norm() const
     }
     return norm;
 }
+
+Size Hamiltonian::num_qubits() const { return pwords.front().num_qubits(); }
+
+Size Hamiltonian::num_terms() const { return pwords.size(); }
+
+const std::vector<PauliWord> &Hamiltonian::get_pwords() const { return pwords; }
 
 }

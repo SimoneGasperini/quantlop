@@ -9,9 +9,13 @@ class PauliWord
 {
 public:
     PauliWord(Complex c, String str);
-    Size num_qubits() const;
     PauliWord operator*(Complex c) const;
     friend PauliWord operator*(Complex c, const PauliWord &pw);
+
+    Size num_qubits() const;
+
+    Complex get_coeff() const;
+    const String &get_string() const;
 
 private:
     friend class Hamiltonian;
