@@ -76,7 +76,7 @@ jobs:
           echo "CMAKE_PREFIX_PATH=$PREFIX" >> "$GITHUB_ENV"
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v4.1.0
+        uses: pypa/cibuildwheel@v3.4.1
         env:
           CIBW_BUILD: "cp311-* cp312-* cp313-* cp314-*"
           CIBW_ARCHS: ${{ matrix.architectures }}
