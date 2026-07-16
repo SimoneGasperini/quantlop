@@ -1,7 +1,7 @@
 import numpy as np
 import quantlop as ql
 
-paulis = ("I", "X", "Y", "Z")
+chars = ("I", "X", "Y", "Z")
 
 
 def get_rand_statevector(nqubits, seed=None):
@@ -15,7 +15,7 @@ def get_rand_statevector(nqubits, seed=None):
 def get_rand_pauliword(nqubits, seed=None):
     rng = np.random.default_rng(seed=seed)
     coeff = rng.random() * 2 - 1
-    string = "".join(rng.choice(paulis, size=nqubits))
+    string = "".join(rng.choice(chars, size=nqubits))
     return ql.PauliWord(coeff=coeff, string=string)
 
 
