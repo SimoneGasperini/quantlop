@@ -66,6 +66,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install .
 
+      - name: Install build and test dependencies
+        run: python -m pip install nanobind pytest scipy
+
       - name: Run Python tests
         run: python -m pytest -v
 

@@ -12,7 +12,6 @@ license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = [
     "pennylane",
-    "pytest",
 ]
 keywords = [
     "quantum-computing",
@@ -29,6 +28,8 @@ classifiers = [
 
 [project.optional-dependencies]
 dev = [
+    "nanobind",
+    "pytest",
     "scipy",
     "pre-commit",
     "ruff",
