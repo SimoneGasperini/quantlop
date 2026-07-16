@@ -30,10 +30,7 @@ static NumpyComplexArray evolve_py(const Hamiltonian &ham, ComplexArray psi, Com
 NB_MODULE(_quantlop, module_py)
 {
     module_py.doc() = "Quantlop C++ core bindings";
-
     nb::class_<PauliWord>(module_py, "PauliWord").def(nb::init<Complex, String>(), nb::arg("coeff"), nb::arg("string"));
-
     nb::class_<Hamiltonian>(module_py, "Hamiltonian").def(nb::init<std::vector<PauliWord>>(), nb::arg("pauli_words"));
-
     module_py.def("evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"), nb::arg("coeff"), nb::arg("num_threads"));
 }
