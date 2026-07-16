@@ -20,5 +20,5 @@ def get_rand_pauliword(num_qubits, seed=None):
 
 
 def get_rand_hamiltonian(num_qubits, num_terms, seed=None):
-    pauli_words = [get_rand_pauliword(num_qubits, seed=seed) for _ in range(num_terms)]
-    return ql.Hamiltonian(pauli_words=pauli_words)
+    pwords = [get_rand_pauliword(num_qubits, seed=seed) for _ in range(num_terms)]
+    return ql.Hamiltonian(pwords=pwords)
