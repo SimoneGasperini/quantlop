@@ -1,5 +1,6 @@
 import numpy as np
 
+from ._quantlop import _PauliWord
 from ._quantlop import _Hamiltonian
 
 char2mat = {
@@ -22,6 +23,21 @@ class Hamiltonian(_Hamiltonian):
     @property
     def pauli_words(self):
         return self._get_pwords()
+
+    @classmethod
+    def from_pennylane(cls, operator, num_qubits):
+        pwords = []
+        for pw, coeff in operator.pauli_rep.items():
+            string = "".join(pw.get(i, "I") for i in range(num_qubits))
+            pwords.append(_PauliWord(coeff=coeff, string=string))
+        return cls(pwords=pwords)
+
+    @classmethod
+    def from_qiskit(cls, operator):
+        pwords = []
+        for label, coeff in zip(operator.paulis.to_labels(), operator.coeffs):
+            pwords.append(_PauliWord(coeff=coeff, string=label))
+        return cls(pwords=pwords)
 
     def matrix(self):
         dim = 2**self.num_qubits
