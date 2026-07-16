@@ -36,22 +36,22 @@ pip install quantlop
 ```
 
 
-## Usage example
+## Quick example
+Here is a simple code example using  `quantlop` native data structures:
 ```python
 import numpy as np
 import quantlop as ql
 
-# set number of qubits
 num_qubits = 3
 
 # define Hamiltonian in Pauli basis
-pauli_words = [
+pwords = [
     ql.PauliWord(coeff=0.5, string="ZZI"),
     ql.PauliWord(coeff=0.2, string="YIX"),
 ]
-ham = ql.Hamiltonian(pauli_words=pauli_words)
+ham = ql.Hamiltonian(pwords=pwords)
 
-# prepare initial state vector
+# set initial state vector
 psi = np.zeros(2**num_qubits, dtype=complex)
 psi[0] = 1.0
 
@@ -64,7 +64,7 @@ evolved_psi = ql.evolve(ham, psi)
 Evolution is serial by default.
 Set `num_threads` to a positive integer to use that many OpenMP threads, or to `"auto"` to use the CPU count reported by the operating system:
 ```python
-evolved_psi = quantlop.evolve(ham, psi, num_threads="auto")
+evolved_psi = ql.evolve(ham, psi, num_threads="auto")
 ```
 
 

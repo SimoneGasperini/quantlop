@@ -1,20 +1,15 @@
-from ._quantlop import PauliWord as _PauliWord
+from ._quantlop import _PauliWord
 
 
-class PauliWord:
-    def __init__(self, coeff, string):
-        self._coeff = coeff
-        self._string = string
-        self._native = _PauliWord(coeff=coeff, string=string)
+class PauliWord(_PauliWord):
+    @property
+    def num_qubits(self):
+        return self._num_qubits()
 
     @property
     def coeff(self):
-        return self._coeff
+        return self._get_coeff()
 
     @property
     def string(self):
-        return self._string
-
-    @property
-    def num_qubits(self):
-        return len(self._string)
+        return self._get_string()
