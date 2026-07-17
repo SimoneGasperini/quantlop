@@ -77,6 +77,12 @@ python -m pip install -e .[dev]
 python -m pytest -v
 ```
 
+Build the native C++ target from source with:
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
 Install pre-commit hook to format Python and C++ code automatically:
 ```bash
 pre-commit install
