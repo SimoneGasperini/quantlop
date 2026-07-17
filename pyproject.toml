@@ -31,6 +31,8 @@ dev = [
     "nanobind",
     "pytest",
     "scipy",
+    "pennylane",
+    "qiskit",
     "pre-commit",
     "ruff",
     "tqdm",
@@ -47,13 +49,6 @@ Repository = "https://github.com/SimoneGasperini/quantlop.git"
 minimum-version = "build-system.requires"
 cmake.version = ">=3.18"
 wheel.packages = ["python/quantlop"]
-
-[tool.pytest.ini_options]
-addopts = [
-    "--strict-config",
-    "--strict-markers",
-]
-testpaths = ["tests/python"]
 
 [tool.ruff]
 line-length = 120
