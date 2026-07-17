@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "quantlop"
-version = "0.0.2"
+version = "0.0.3"
 description = "High-performance quantum simulator for matrix-free Hamiltonian evolution"
 readme = "README.md"
 license = "Apache-2.0"
