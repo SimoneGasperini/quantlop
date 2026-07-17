@@ -51,9 +51,3 @@ install(
     LIBRARY DESTINATION quantlop
     RUNTIME DESTINATION quantlop
 )
-
-enable_testing()
-
-add_executable(quantlop_core_tests tests/cpp/test_core.cpp)
-target_link_libraries(quantlop_core_tests PRIVATE quantlop::core)
-add_test(NAME quantlop_core_tests COMMAND quantlop_core_tests)

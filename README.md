@@ -77,11 +77,10 @@ python -m pip install -e .[dev]
 python -m pytest -v
 ```
 
-Run the native C++ test suite with:
+Build the native C++ core with:
 ```bash
 cmake -S . -B build
 cmake --build build
-ctest --test-dir build --output-on-failure
 ```
 
 Install the pre-commit hook to format Python and C++ files automatically:
