@@ -59,6 +59,10 @@ psi[0] = 1.0
 evolved_psi = ql.evolve(ham, psi)
 ```
 
+The library also provides classmethods to import the hamiltonian directly from other quantum computing frameworks:
+- `ql.Hamiltonian.from_pennylane` to build from Pennylane [`Hamiltonian`](https://docs.pennylane.ai/en/stable/code/api/pennylane.Hamiltonian.html) objects
+- `ql.Hamiltonian.from_qiskit` to build from Qiskit [`SparsePauliOp`](https://quantum.cloud.ibm.com/docs/en/api/qiskit/qiskit.quantum_info.SparsePauliOp) objects
+
 
 ## Multi-threading
 Evolution is serial by default.
