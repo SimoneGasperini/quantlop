@@ -20,10 +20,6 @@ class Hamiltonian(_Hamiltonian):
     def num_terms(self):
         return self._num_terms()
 
-    @property
-    def pauli_words(self):
-        return self._get_pwords()
-
     @classmethod
     def from_pennylane(cls, operator, num_qubits):
         pwords = []
@@ -40,9 +36,9 @@ class Hamiltonian(_Hamiltonian):
         return cls(pwords=pwords)
 
     def matrix(self):
-        dim = 2**self.num_qubits
+        dim = 2 ** self._num_qubits()
         matrix = np.zeros(shape=(dim, dim), dtype=np.complex128)
-        for pw in self.pauli_words:
+        for pw in self._get_pwords():
             mat = np.ones(shape=(1, 1), dtype=np.complex128)
             for char in pw._get_string():
                 pauli = char2mat.get(char, char2mat["I"])

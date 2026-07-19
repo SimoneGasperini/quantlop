@@ -12,13 +12,13 @@ def test_positional_args_init():
     assert ham.num_qubits == 4
     assert ham.num_terms == 2
 
-    assert ham.pauli_words[0]._num_qubits() == 4
-    assert ham.pauli_words[0]._get_coeff() == -1.27j
-    assert ham.pauli_words[0]._get_string() == "YIIX"
+    assert ham._get_pwords()[0]._num_qubits() == 4
+    assert ham._get_pwords()[0]._get_coeff() == -1.27j
+    assert ham._get_pwords()[0]._get_string() == "YIIX"
 
-    assert ham.pauli_words[1]._num_qubits() == 4
-    assert ham.pauli_words[1]._get_coeff() == 0.92
-    assert ham.pauli_words[1]._get_string() == "IIZZ"
+    assert ham._get_pwords()[1]._num_qubits() == 4
+    assert ham._get_pwords()[1]._get_coeff() == 0.92
+    assert ham._get_pwords()[1]._get_string() == "IIZZ"
 
 
 def test_keyword_args_init():
@@ -28,13 +28,13 @@ def test_keyword_args_init():
     assert ham.num_qubits == 4
     assert ham.num_terms == 2
 
-    assert ham.pauli_words[0]._num_qubits() == 4
-    assert ham.pauli_words[0]._get_coeff() == -1.27j
-    assert ham.pauli_words[0]._get_string() == "YIIX"
+    assert ham._get_pwords()[0]._num_qubits() == 4
+    assert ham._get_pwords()[0]._get_coeff() == -1.27j
+    assert ham._get_pwords()[0]._get_string() == "YIIX"
 
-    assert ham.pauli_words[1]._num_qubits() == 4
-    assert ham.pauli_words[1]._get_coeff() == 0.92
-    assert ham.pauli_words[1]._get_string() == "IIZZ"
+    assert ham._get_pwords()[1]._num_qubits() == 4
+    assert ham._get_pwords()[1]._get_coeff() == 0.92
+    assert ham._get_pwords()[1]._get_string() == "IIZZ"
 
 
 def test_num_qubits_read_only():
@@ -51,14 +51,6 @@ def test_num_terms_read_only():
     ham = ql.Hamiltonian(pwords=[pw0, pw1])
     with pytest.raises(AttributeError, match="property 'num_terms' of 'Hamiltonian' object has no setter"):
         ham.num_terms = 3
-
-
-def test_pauli_words_read_only():
-    pw0 = ql.PauliWord(-1.27j, "YIIX")
-    pw1 = ql.PauliWord(0.92, "IIZZ")
-    ham = ql.Hamiltonian(pwords=[pw0, pw1])
-    with pytest.raises(AttributeError, match="property 'pauli_words' of 'Hamiltonian' object has no setter"):
-        ham.pauli_words = []
 
 
 def test_matrix_from_pennylane():
