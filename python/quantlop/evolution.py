@@ -29,16 +29,17 @@ def evolve(ham, psi, coeff=1, num_threads=None):
         ``2**ham.num_qubits`` amplitudes. Values are converted to a
         C-contiguous :class:`numpy.complex128` array. The input is not modified
         by the evolution.
-    coeff : complex, default: 1
+    coeff : complex, optional
         Scalar ``c`` in the exponential. For real-time evolution this is the
         elapsed time (in units where :math:`\hbar=1`). ``coeff=0`` applies the
         identity. A complex value is accepted, although non-real values make
-        the exponential non-unitary even when ``ham`` is Hermitian.
-    num_threads : int, {None, "auto"}, optional
+        the exponential non-unitary even when ``ham`` is Hermitian. The
+        default is ``1``.
+    num_threads : int or {"auto"} or None, optional
         OpenMP thread selection for Hamiltonian-vector products. ``None``
         selects the serial implementation. A positive integer requests that
         many threads. ``"auto"`` requests the logical CPU count reported by
-        :func:`os.cpu_count`.
+        :func:`os.cpu_count`. The default is ``None``.
 
     Returns
     -------

@@ -36,7 +36,7 @@ jobs:
           python -m pip install ".[dev]"
 
       - name: Build documentation
-        run: python -m pdoc quantlop --docformat numpy --output-directory site
+        run: python -m sphinx -W docs site
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6

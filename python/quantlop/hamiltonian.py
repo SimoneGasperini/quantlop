@@ -70,19 +70,25 @@ class Hamiltonian(_Hamiltonian):
 
     @property
     def num_qubits(self):
-        """int: Number of qubits acted on by the Hamiltonian.
+        """Number of qubits acted on by the Hamiltonian.
 
-        The value is inferred from the first Pauli word. All terms are
-        expected to have this length. The property is read-only.
+        Returns
+        -------
+        int
+            Number inferred from the first Pauli word. All terms are expected
+            to have this length. The property is read-only.
         """
         return self._num_qubits()
 
     @property
     def num_terms(self):
-        """int: Number of Pauli-word terms stored in the Hamiltonian.
+        """Number of Pauli-word terms stored in the Hamiltonian.
 
-        Terms are counted as supplied; identical terms are not merged. The
-        property is read-only.
+        Returns
+        -------
+        int
+            Number of terms as supplied. Identical terms are not merged. The
+            property is read-only.
         """
         return self._num_terms()
 

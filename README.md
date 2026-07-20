@@ -92,3 +92,8 @@ Install pre-commit hook to format Python and C++ code automatically:
 ```bash
 pre-commit install
 ```
+
+Build the Python API documentation locally with:
+```bash
+python -m sphinx -W docs site
+```

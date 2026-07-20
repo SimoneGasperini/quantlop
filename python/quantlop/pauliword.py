@@ -60,26 +60,35 @@ class PauliWord(_PauliWord):
 
     @property
     def num_qubits(self):
-        """int: Number of qubits on which the Pauli word acts.
+        """Number of qubits on which the Pauli word acts.
 
-        This is the length of :attr:`string`. The property is read-only.
+        Returns
+        -------
+        int
+            Length of :attr:`string`. The property is read-only.
         """
         return self._num_qubits()
 
     @property
     def coeff(self):
-        """complex: Scalar coefficient multiplying the Pauli tensor product.
+        """Scalar coefficient multiplying the Pauli tensor product.
 
-        The value is stored in double-precision complex form by the native
-        implementation. The property is read-only.
+        Returns
+        -------
+        complex
+            Coefficient stored in double-precision complex form by the native
+            implementation. The property is read-only.
         """
         return self._get_coeff()
 
     @property
     def string(self):
-        """str: Pauli operators in most-significant-qubit-first order.
+        """Pauli operators in most-significant-qubit-first order.
 
-        Character ``i`` identifies the operator acting on qubit axis ``i``.
-        The property is read-only.
+        Returns
+        -------
+        str
+            Operator string in which character ``i`` acts on qubit axis
+            ``i``. The property is read-only.
         """
         return self._get_string()
