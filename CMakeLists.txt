@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(quantlop VERSION 0.0.3 LANGUAGES CXX)
+project(quantlop VERSION 0.0.4 LANGUAGES CXX)
 
 find_package(OpenMP REQUIRED)
 
