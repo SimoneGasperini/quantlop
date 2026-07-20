@@ -1,4 +1,4 @@
-"""Python representation of a weighted Pauli word."""
+"""Representation of a weighted Pauli word."""
 
 from ._quantlop import _PauliWord
 
@@ -10,20 +10,17 @@ class PauliWord(_PauliWord):
 
     .. math::
 
-        c\,\bigotimes_{i=0}^{n-1} P_i,
+        c\,\bigotimes_i P_i,
 
-    where ``c`` is ``coeff`` and each ``P_i`` is selected by one character of
-    ``string``. The leftmost character acts on the most-significant qubit in
+    where ``c`` is ``coeff`` and each ``P_i`` is a single-qubit Pauli.
+    The leftmost character acts on the most-significant qubit in
     the computational-basis index. For example, ``"XI"`` represents
     :math:`X \otimes I` and maps ``|00>`` to ``|10>``.
 
     Parameters
     ----------
     coeff : complex
-        Scalar coefficient of the Pauli term. Real values are accepted and
-        converted to double-precision complex values by the native binding.
-        Use real coefficients when the term is part of a Hermitian
-        Hamiltonian.
+        Scalar complex coefficient of the Pauli term.
     string : str
         Non-empty Pauli string. Each character should be one of ``"I"``,
         ``"X"``, ``"Y"``, or ``"Z"``. Its length determines the number of
@@ -62,7 +59,8 @@ class PauliWord(_PauliWord):
         Returns
         -------
         int
-            Length of :attr:`string`. The property is read-only.
+            Length of :attr:`string`.
+            The property is read-only.
         """
         return self._num_qubits()
 
@@ -73,8 +71,8 @@ class PauliWord(_PauliWord):
         Returns
         -------
         complex
-            Coefficient stored in double-precision complex form by the native
-            implementation. The property is read-only.
+            Coefficient stored in double-precision complex.
+            The property is read-only.
         """
         return self._get_coeff()
 
@@ -85,7 +83,7 @@ class PauliWord(_PauliWord):
         Returns
         -------
         str
-            Operator string in which character ``i`` acts on qubit axis
-            ``i``. The property is read-only.
+            Operator string in which character ``i`` acts on qubit ``i``.
+            The property is read-only.
         """
         return self._get_string()

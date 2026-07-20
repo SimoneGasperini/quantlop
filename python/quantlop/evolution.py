@@ -1,4 +1,4 @@
-"""Matrix-free Hamiltonian time evolution."""
+"""Matrix-free Hamiltonian evolution."""
 
 import os
 from numbers import Real

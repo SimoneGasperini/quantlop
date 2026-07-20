@@ -1,4 +1,4 @@
-"""Hamiltonians represented as finite sums of weighted Pauli words."""
+"""Representation of Hamiltonian as finite sums of weighted Pauli words."""
 
 import numpy as np
 
@@ -77,7 +77,8 @@ class Hamiltonian(_Hamiltonian):
         -------
         int
             Number inferred from the first Pauli word. All terms are expected
-            to have this length. The property is read-only.
+            to have this length.
+            The property is read-only.
         """
         return self._num_qubits()
 
@@ -88,8 +89,8 @@ class Hamiltonian(_Hamiltonian):
         Returns
         -------
         int
-            Number of terms as supplied. Identical terms are not merged. The
-            property is read-only.
+            Number of terms as supplied. Identical terms are not merged.
+            The property is read-only.
         """
         return self._num_terms()
 
