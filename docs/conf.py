@@ -9,6 +9,7 @@ release = package_version("quantlop")
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.doctest",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
 ]

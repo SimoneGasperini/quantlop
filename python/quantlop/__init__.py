@@ -17,7 +17,7 @@ The usual workflow is::
         ]
     )
     psi = np.array([1, 0, 0, 0], dtype=np.complex128)
-    evolved = ql.evolve(ham, psi, coeff=0.1)
+    evolved = ql.evolve(ham, psi, theta=0.1)
 
 The evolution routine applies the Hamiltonian directly to state vectors. It
 does not construct the exponentially large dense Hamiltonian matrix.

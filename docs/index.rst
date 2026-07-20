@@ -12,12 +12,4 @@ the exponentially large dense Hamiltonian matrix.
    :maxdepth: 2
    :caption: Documentation
 
-   getting-started
    api
-
-Indices
--------
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

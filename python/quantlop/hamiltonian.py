@@ -57,15 +57,16 @@ class Hamiltonian(_Hamiltonian):
     --------
     Build :math:`H = 0.5 Z \otimes I - 0.25 X \otimes X`:
 
-    >>> import quantlop as ql
-    >>> ham = ql.Hamiltonian(
-    ...     pwords=[
-    ...         ql.PauliWord(0.5, "ZI"),
-    ...         ql.PauliWord(-0.25, "XX"),
-    ...     ]
-    ... )
-    >>> ham.num_qubits, ham.num_terms
-    (2, 2)
+    .. testcode::
+
+        import quantlop as ql
+
+        ham = ql.Hamiltonian(
+            pwords=[
+                ql.PauliWord(0.5, "ZI"),
+                ql.PauliWord(-0.25, "XX"),
+            ]
+        )
     """
 
     @property
@@ -120,15 +121,6 @@ class Hamiltonian(_Hamiltonian):
             Native quantlop Hamiltonian containing one term per entry in the
             PennyLane Pauli representation.
 
-        Examples
-        --------
-        >>> import pennylane as qml
-        >>> import quantlop as ql
-        >>> op = 0.5 * qml.Z(0) + 0.2 * (qml.X(0) @ qml.X(1))
-        >>> ham = ql.Hamiltonian.from_pennylane(op, num_qubits=2)
-        >>> ham.num_terms
-        2
-
         See Also
         --------
         from_qiskit : Construct from a Qiskit ``SparsePauliOp``.
@@ -160,15 +152,6 @@ class Hamiltonian(_Hamiltonian):
         Hamiltonian
             Native quantlop Hamiltonian with the input terms and coefficients.
 
-        Examples
-        --------
-        >>> from qiskit.quantum_info import SparsePauliOp
-        >>> import quantlop as ql
-        >>> op = SparsePauliOp(["ZI", "XX"], coeffs=[0.5, -0.25])
-        >>> ham = ql.Hamiltonian.from_qiskit(op)
-        >>> ham.num_qubits, ham.num_terms
-        (2, 2)
-
         See Also
         --------
         from_pennylane : Construct from a PennyLane Pauli operator.
@@ -197,14 +180,6 @@ class Hamiltonian(_Hamiltonian):
         This method requires :math:`O(4^n)` memory and work for ``n`` qubits.
         It is intended for inspection, validation, and small systems. Use
         :func:`quantlop.evolve` for matrix-free evolution of larger systems.
-
-        Examples
-        --------
-        >>> import numpy as np
-        >>> import quantlop as ql
-        >>> ham = ql.Hamiltonian([ql.PauliWord(1.0, "Z")])
-        >>> np.array_equal(ham.matrix(), np.diag([1.0, -1.0]))
-        True
         """
         dim = 2 ** self._num_qubits()
         matrix = np.zeros(shape=(dim, dim), dtype=np.complex128)

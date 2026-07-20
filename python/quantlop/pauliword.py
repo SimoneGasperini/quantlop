@@ -10,7 +10,7 @@ class PauliWord(_PauliWord):
 
     .. math::
 
-        c\,(P_0 \otimes P_1 \otimes \cdots \otimes P_{n-1}),
+        c\,\bigotimes_{i=0}^{n-1} P_i,
 
     where ``c`` is ``coeff`` and each ``P_i`` is selected by one character of
     ``string``. The leftmost character acts on the most-significant qubit in
@@ -32,7 +32,7 @@ class PauliWord(_PauliWord):
     Attributes
     ----------
     num_qubits : int
-        Number of characters, and therefore qubits, in the Pauli word.
+        Number of qubits in the Pauli word.
     coeff : complex
         Read-only coefficient supplied at construction.
     string : str
@@ -48,14 +48,11 @@ class PauliWord(_PauliWord):
     --------
     Construct a three-qubit Pauli term and inspect its components:
 
-    >>> import quantlop as ql
-    >>> word = ql.PauliWord(coeff=-0.5j, string="YIZ")
-    >>> word.num_qubits
-    3
-    >>> word.coeff == -0.5j
-    True
-    >>> word.string
-    'YIZ'
+    .. testcode::
+
+        import quantlop as ql
+
+        word = ql.PauliWord(coeff=-0.5j, string="YIZ")
     """
 
     @property

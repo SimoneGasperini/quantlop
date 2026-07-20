@@ -3,17 +3,9 @@ API reference
 
 The public API is available directly from the :mod:`quantlop` package.
 
-PauliWord
----------
+.. toctree::
+   :maxdepth: 1
 
-.. autoclass:: quantlop.PauliWord(coeff, string)
-
-Hamiltonian
------------
-
-.. autoclass:: quantlop.Hamiltonian(pwords)
-
-evolve
-------
-
-.. autofunction:: quantlop.evolve
+   api/pauliword
+   api/hamiltonian
+   api/evolve
