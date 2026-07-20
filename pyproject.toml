@@ -38,6 +38,7 @@ dev = [
     "tqdm",
     "memory-profiler",
     "matplotlib",
+    "pdoc>=16,<17",
 ]
 
 [project.urls]
