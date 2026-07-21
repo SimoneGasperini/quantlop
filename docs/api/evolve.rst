@@ -1,4 +1,0 @@
-evolve
-======
-
-.. autofunction:: quantlop.evolve

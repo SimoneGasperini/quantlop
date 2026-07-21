@@ -62,10 +62,6 @@ class Hamiltonian(_Hamiltonian):
         -------
         Hamiltonian
             Native Hamiltonian with one term per entry in the PennyLane Pauli representation.
-
-        See Also
-        --------
-        from_qiskit : Construct from a Qiskit ``SparsePauliOp``.
         """
         pwords = []
         for pw, coeff in operator.pauli_rep.items():
@@ -86,10 +82,6 @@ class Hamiltonian(_Hamiltonian):
         -------
         Hamiltonian
             Native Hamiltonian with the input terms and coefficients.
-
-        See Also
-        --------
-        from_pennylane : Construct from a PennyLane Pauli operator.
         """
         pwords = []
         for label, coeff in zip(operator.paulis.to_labels(), operator.coeffs):

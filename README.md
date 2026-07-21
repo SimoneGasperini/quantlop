@@ -66,27 +66,10 @@ evolved_psi = ql.evolve(ham, psi, num_threads="auto")
 
 
 ## Development
-The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
+The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target. See the [Development](https://simonegasperini.github.io/quantlop/development.html) section in the documentation for more details.
 
-Build project from source in `dev` mode and run Python tests with:
+Build the project from source in `dev` mode and run Python tests with:
 ```bash
-python -m pip install -e .[dev]
-python -m pytest -v
-```
-
-Build the native C++ target from source with:
-```bash
-cmake -S . -B build
-cmake --build build
-```
-
-Install pre-commit hook to format Python and C++ code automatically:
-```bash
-pre-commit install
-```
-
-Check the examples in the API docstrings and build the documentation locally with:
-```bash
-python -m sphinx -b doctest -W docs site
-python -m sphinx -W docs site
+pip install -e .[dev]
+pytest -v
 ```

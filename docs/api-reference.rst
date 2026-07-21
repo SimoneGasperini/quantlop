@@ -1,9 +1,21 @@
 API reference
 =============
 
-.. toctree::
-   :maxdepth: 1
+PauliWord
+---------
 
-   api/pauliword
-   api/hamiltonian
-   api/evolve
+.. autoclass:: quantlop.PauliWord(coeff, string)
+
+----
+
+Hamiltonian
+-----------
+
+.. autoclass:: quantlop.Hamiltonian(pwords)
+
+----
+
+evolve
+------
+
+.. autofunction:: quantlop.evolve

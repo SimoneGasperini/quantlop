@@ -28,7 +28,7 @@ release from PyPI:
 
    .. code-block:: console
 
-      pip install -e ".[dev]"
+      pip install -e .[dev]
 
 
 Quick example
@@ -36,7 +36,7 @@ Quick example
 
 Here is a simple code example using ``quantlop`` native data structures:
 
-.. code-block:: python
+.. testcode::
 
    import numpy as np
    import quantlop as ql
