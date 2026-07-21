@@ -12,6 +12,7 @@ extensions = [
     "sphinx.ext.doctest",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
+    "sphinx_design",
 ]
 
 autodoc_default_options = {

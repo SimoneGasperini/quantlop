@@ -39,6 +39,7 @@ dev = [
     "memory-profiler",
     "matplotlib",
     "sphinx>=8,<10",
+    "sphinx-design>=0.6,<1",
     "pydata-sphinx-theme>=0.16,<1",
 ]
 
