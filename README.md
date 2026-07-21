@@ -16,11 +16,23 @@
 
 
 ## Introduction
-`quantlop` is a high-performance simulator for the time evolution of quantum systems whose Hamiltonians can be written as sparse sums of Pauli words.
 
-Rather than constructing the full Hamiltonian matrix, `quantlop` applies each Pauli word as a linear operator directly to the state vector.
-It then uses a Krylov method to numerically approximate the action of the matrix exponential.
-This matrix-free approach dramatically reduces memory usage and avoids costly dense-matrix operations, making larger simulations more practical.
+`quantlop` is a Python package, backed by a native C++ core, for simulating the evolution of quantum states
+under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an $n$-qubit Hamiltonian
+$$
+H = \sum_k c_k P_k
+$$
+`quantlop` computes the action
+$$
+|\psi(\theta)\rangle = e^{-i \theta H}|\psi\rangle
+$$
+without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is applied directly to
+the dense state vector, and a Lanczos–Krylov method approximates the matrix-exponential action in a much smaller
+subspace.
+
+A dense Hamiltonian for $n$ qubits requires $O(4^n)$ storage, whereas the matrix-free evolution works only with its
+compact Pauli representation. The dense state vector still grows exponentially with the number of qubits, but avoiding
+the dense operator substantially lowers the memory requirement for Hamiltonians with Pauli decompositions.
 
 
 ## Installation
@@ -66,7 +78,8 @@ evolved_psi = ql.evolve(ham, psi, num_threads="auto")
 
 
 ## Development
-The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target. See the [Development](https://simonegasperini.github.io/quantlop/development.html) section in the documentation for more details.
+The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
+See the [Development](https://simonegasperini.github.io/quantlop/development.html) section in the documentation for more details.
 
 Build the project from source in `dev` mode and run Python tests with:
 ```bash
