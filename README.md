@@ -19,13 +19,13 @@
 
 `quantlop` is a Python package, backed by a native C++ core, for simulating the evolution of quantum states
 under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an $n$-qubit Hamiltonian
-$$
+```math
 H = \sum_k c_k P_k
-$$
+```
 `quantlop` computes the action
-$$
+```math
 |\psi(\theta)\rangle = e^{-i \theta H}|\psi\rangle
-$$
+```
 without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is applied directly to
 the dense state vector, and a Lanczos–Krylov method approximates the matrix-exponential action in a much smaller
 subspace.
