@@ -28,7 +28,7 @@ release from PyPI:
 
    .. code-block:: console
 
-      python -m pip install -e ".[dev]"
+      pip install -e ".[dev]"
 
 
 Quick example
