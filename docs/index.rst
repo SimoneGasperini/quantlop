@@ -48,8 +48,8 @@ Explore the documentation
       +++
       Start here →
 
-   .. grid-item-card:: User guide
-      :link: user-guide
+   .. grid-item-card:: Overview
+      :link: overview
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
       :class-title: sd-text-info
@@ -91,6 +91,6 @@ Explore the documentation
    :hidden:
 
    getting-started
-   user-guide
+   overview
    api-reference
    development
