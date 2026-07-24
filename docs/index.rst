@@ -8,26 +8,23 @@ quantlop
 .. grid:: 1 1 3 3
    :gutter: 3
 
-   .. grid-item-card:: Matrix-free
+   .. grid-item-card:: Memory-efficient
       :class-card: sd-shadow-sm sd-outline-primary
       :class-title: sd-text-primary
 
-      Apply Pauli words directly to the state vector and avoid storing
-      the exponentially large Hamiltonian matrix.
-
-   .. grid-item-card:: Accuracy-driven
-      :class-card: sd-shadow-sm sd-outline-primary
-      :class-title: sd-text-primary
-
-      Select the Taylor degree and scaling automatically from backward-error
-      bounds tailored to the matrix exponential.
+      Directly apply Pauli words without storing the dense representation of the Hamiltonian matrix.
 
    .. grid-item-card:: Multi-threaded
       :class-card: sd-shadow-sm sd-outline-primary
       :class-title: sd-text-primary
 
-      Run serially by default or enable OpenMP execution with an explicit
-      thread count or ``num_threads="auto"``.
+      Run serially by default or enable OpenMP parallel execution with an explicit thread count.
+
+   .. grid-item-card:: PennyLane and Qiskit
+      :class-card: sd-shadow-sm sd-outline-primary
+      :class-title: sd-text-primary
+
+      Build Hamiltonians directly from PennyLane ``Hamiltonian`` and Qiskit ``SparsePauliOp`` objects.
 
 
 Explore the documentation
