@@ -19,10 +19,15 @@ using quantlop::String;
 using ComplexArray = nb::ndarray<const Complex, nb::ndim<1>, nb::c_contig, nb::device::cpu>;
 using NumpyComplexArray = nb::ndarray<nb::numpy, Complex, nb::ndim<1>, nb::c_contig>;
 
-static NumpyComplexArray evolve_py(const Hamiltonian &ham, ComplexArray psi, Complex coeff, int num_threads)
+static NumpyComplexArray evolve_py(
+    const Hamiltonian &ham,
+    ComplexArray psi,
+    Complex coeff,
+    int num_threads,
+    int dim_krylov)
 {
     const Size dim = psi.shape(0);
-    Complex *out_ptr = quantlop::evolve(ham, psi.data(), coeff, num_threads);
+    Complex *out_ptr = quantlop::evolve(ham, psi.data(), coeff, num_threads, dim_krylov);
     nb::capsule owner(out_ptr, [](void *p) noexcept { delete[] static_cast<Complex *>(p); });
     return NumpyComplexArray(out_ptr, {dim}, owner);
 }
@@ -43,5 +48,12 @@ NB_MODULE(_quantlop, module_py)
         .def("_num_terms", &Hamiltonian::num_terms)
         .def("_get_pwords", &Hamiltonian::get_pwords);
 
-    module_py.def("_evolve", &evolve_py, nb::arg("ham"), nb::arg("psi"), nb::arg("coeff"), nb::arg("num_threads"));
+    module_py.def(
+        "_evolve",
+        &evolve_py,
+        nb::arg("ham"),
+        nb::arg("psi"),
+        nb::arg("coeff"),
+        nb::arg("num_threads"),
+        nb::arg("dim_krylov"));
 }

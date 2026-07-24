@@ -2,6 +2,7 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 
 #include <quantlop/hamiltonian.hpp>
@@ -138,20 +139,21 @@ namespace
             return {std::exp(a[0])};
         }
 
-        constexpr std::array<double, 14> b = {64764752532480000.0,
-                                              32382376266240000.0,
-                                              7771770303897600.0,
-                                              1187353796428800.0,
-                                              129060195264000.0,
-                                              10559470521600.0,
-                                              670442572800.0,
-                                              33522128640.0,
-                                              1323241920.0,
-                                              40840800.0,
-                                              960960.0,
-                                              16380.0,
-                                              182.0,
-                                              1.0};
+        constexpr std::array<double, 14> b = {
+            64764752532480000.0,
+            32382376266240000.0,
+            7771770303897600.0,
+            1187353796428800.0,
+            129060195264000.0,
+            10559470521600.0,
+            670442572800.0,
+            33522128640.0,
+            1323241920.0,
+            40840800.0,
+            960960.0,
+            16380.0,
+            182.0,
+            1.0};
 
         constexpr double theta_13 = 5.371920351148152;
         const double norm_a = one_norm_dense(a, n);
@@ -225,8 +227,13 @@ namespace
         return out;
     }
 
-    Size build_lanczos_tridiagonal(const Hamiltonian &ham, const Complex *psi, double bnorm, std::vector<Complex> &T,
-                                   Size m, int num_threads)
+    Size build_lanczos_tridiagonal(
+        const Hamiltonian &ham,
+        const Complex *psi,
+        double bnorm,
+        std::vector<Complex> &T,
+        Size m,
+        int num_threads)
     {
         const Size dim = Size(1) << ham.num_qubits();
         const double norm_tol = std::numeric_limits<double>::epsilon() * 1e2;
@@ -291,9 +298,15 @@ namespace
         return m;
     }
 
-    void reconstruct_lanczos_state(const Hamiltonian &ham, const Complex *psi, double bnorm,
-                                   const std::vector<Complex> &T, Size basis_size, Complex coeff, Complex *out,
-                                   int num_threads)
+    void reconstruct_lanczos_state(
+        const Hamiltonian &ham,
+        const Complex *psi,
+        double bnorm,
+        const std::vector<Complex> &T,
+        Size basis_size,
+        Complex coeff,
+        Complex *out,
+        int num_threads)
     {
         const Size dim = Size(1) << ham.num_qubits();
         std::vector<Complex> prev(dim, Complex(0.0, 0.0));
@@ -349,14 +362,19 @@ namespace
     }
 }
 
-Complex *expm_multiply_krylov(const Hamiltonian &ham, const Complex *psi, Complex coeff, int num_threads)
+Complex *expm_multiply_krylov(
+    const Hamiltonian &ham,
+    const Complex *psi,
+    Complex coeff,
+    int num_threads,
+    int dim_krylov)
 {
-    const Size dim = Size(1) << ham.num_qubits();
+    const int dim = 1 << ham.num_qubits();
     Complex *out = new Complex[dim];
     std::fill(out, out + dim, Complex(0.0, 0.0));
 
     const double bnorm = l2_norm(psi, dim);
-    const Size m = std::min<Size>(30, dim);
+    const int m = std::min(dim_krylov, dim);
 
     std::vector<Complex> T(m * m, Complex(0.0, 0.0));
     const Size basis_size = build_lanczos_tridiagonal(ham, psi, bnorm, T, m, num_threads);
