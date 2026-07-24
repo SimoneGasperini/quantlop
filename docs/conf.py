@@ -11,7 +11,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.doctest",
     "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
+    "numpydoc",
     "sphinx_design",
 ]
 
@@ -19,9 +19,8 @@ autodoc_default_options = {
     "members": True,
 }
 autodoc_member_order = "bysource"
-napoleon_numpy_docstring = True
-napoleon_google_docstring = False
-napoleon_use_ivar = True
+numpydoc_attributes_as_param_list = True
+numpydoc_class_members_toctree = False
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
