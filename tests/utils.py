@@ -14,7 +14,7 @@ def get_rand_statevector(num_qubits, seed=None):
 
 def get_rand_pauliword(num_qubits, seed=None):
     rng = np.random.default_rng(seed=seed)
-    coeff = rng.random() * 2 - 1
+    coeff = rng.random() * 10 - 5
     string = "".join(rng.choice(chars, size=num_qubits))
     return ql.PauliWord(coeff=coeff, string=string)
 
