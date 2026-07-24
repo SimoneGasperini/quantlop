@@ -52,8 +52,7 @@ Explore the documentation
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Learn how adaptive scaling and Taylor approximation evaluate the
-      exponential action without forming a dense operator.
+      Learn how ``quantlop`` evaluates the exponential action without forming a dense operator.
 
       +++
       Read the guide →
