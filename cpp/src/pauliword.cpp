@@ -51,9 +51,10 @@ PauliWord::PauliWord(Complex coeff, String string)
 void PauliWord::apply(const Complex *in, Complex *out, int num_threads) const
 {
     const int threads = num_threads > 0 ? num_threads : 1;
+    const std::int64_t dimension = static_cast<std::int64_t>(dimension_);
 
 #pragma omp parallel for if (num_threads > 1) num_threads(threads) schedule(static)
-    for (Index input_index = 0; input_index < dimension_; ++input_index)
+    for (std::int64_t input_index = 0; input_index < dimension; ++input_index)
     {
         const Mask output_index = Mask(input_index) ^ flip_mask_;
         const bool odd_parity = (std::popcount(phase_mask_ & Mask(input_index)) & 1) != 0;
