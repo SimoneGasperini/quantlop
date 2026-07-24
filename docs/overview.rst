@@ -26,126 +26,86 @@ matrix exponential quickly becomes impractical because its computational and
 storage costs grow exponentially with the number of qubits.
 
 For time evolution, only the action of the exponential on the supplied state
-is typically required. :mod:`quantlop` computes this action with a matrix-free
-Lanczos-Krylov method, which applies the Hamiltonian directly to vectors and
-never forms a dense representation of :math:`H` or :math:`e^{-itH}`. The
-method identifies a low-dimensional subspace that captures the relevant action
-of the Hamiltonian and solves the evolution problem within that subspace.
+is required. :mod:`quantlop` computes this action with the scaling and
+truncated-Taylor algorithm of `Al-Mohy and Higham
+<https://doi.org/10.1137/100788860>`_. Pauli words are applied directly to
+vectors, so neither :math:`H` nor :math:`e^{-itH}` is stored as a dense matrix.
 
 
-Krylov methods
+Identity shift
 ^^^^^^^^^^^^^^
 
-The connection between time evolution and Krylov methods follows from the
-exact power-series expansion of the matrix exponential. For a square matrix
-:math:`A` and an input vector :math:`v`,
+Write the Hamiltonian as
 
 .. math::
 
-   e^A v = \sum_{k=0}^{\infty}\frac{A^k v}{k!} = v + A v + \frac{A^2 v}{2!} + \frac{A^3 v}{3!} + \cdots.
+   H = cI + \widetilde{H},
 
-The action of the exponential is therefore determined by the sequence
-:math:`v, A v, A^2 v, \ldots`, whose first :math:`m` vectors define the Krylov
-subspace
-
-.. math::
-
-   \mathcal{K}_m(A,v) = \operatorname{span}\left\{v,\; A v,\; \ldots,\; A^{m-1} v\right\}.
-
-Since the Hamiltonian is Hermitian, an orthonormal basis for this subspace can
-be constructed efficiently using the Lanczos recurrence.
-
-Rather than evaluating or truncating the power series term by term, the Krylov
-method projects :math:`H` onto an orthonormal basis of the subspace,
-evaluates the exponential of the projected matrix, and maps the result back to
-the full state space. Increasing :math:`m` generally improves the numerical
-approximation at the cost of additional matrix-vector products.
-
-
-Lanczos iteration
-^^^^^^^^^^^^^^^^^
-
-For a Hermitian matrix, the Lanczos algorithm constructs an orthonormal Krylov
-basis through a three-term recurrence involving only the current and previous
-basis vectors. Starting from a nonzero input :math:`v`, initialize
+where :math:`c` is the sum of the coefficients of all identity Pauli words.
+The identity contribution can be separated exactly:
 
 .. math::
 
-   q_0 = 0, \qquad \beta_1 = 0, \qquad q_1 = \frac{v}{\lVert v\rVert_2}.
+   e^{-itH}v = e^{-itc}e^{-it\widetilde{H}}v.
 
-The first iteration computes :math:`H q_1` as a matrix-vector product and
-subtracts its projection along :math:`q_1` to obtain the residual
+This reduces the norm of the operator that must be approximated. During the
+Taylor recurrence, :mod:`quantlop` applies only the non-identity Pauli words
+and accumulates the identity contribution as a scalar phase.
 
-.. math::
 
-   r_1 = H q_1 - \alpha_1 q_1,
+Scaling and Taylor degree
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-where :math:`\alpha_1 = q_1^\dagger H q_1`. The normalized residual then gives
-the next basis vector :math:`q_2`.
-
-In general, the residual at iteration :math:`j` is
-
-.. math::
-
-   r_j = H q_j - \beta_j q_{j-1} - \alpha_j q_j,
-
-where :math:`\alpha_j = q_j^\dagger H q_j` is the coefficient of the projection
-of :math:`H q_j` onto :math:`q_j`. In exact arithmetic, Hermiticity ensures
-that :math:`r_j` is orthogonal to every Lanczos vector constructed so far. Its
-norm defines the next :math:`\beta_{j+1}` coefficient, and the normalized
-residual provides the next basis vector
+Let :math:`A=-it\widetilde{H}` and define the degree-:math:`m` Taylor
+polynomial
 
 .. math::
 
-   \beta_{j+1} = \lVert r_j\rVert_2, \qquad q_{j+1} = \frac{r_j}{\beta_{j+1}}.
+   T_m(X) = \sum_{k=0}^{m}\frac{X^k}{k!}.
 
-Repeating this process produces the basis :math:`q_1,\ldots,q_m`.
-When :math:`\beta_{j+1}=0`, the current Krylov subspace is invariant under
-:math:`H` and the recurrence terminates exactly. In floating-point arithmetic,
-:mod:`quantlop` uses a numerical tolerance and enforces a maximum Krylov
-dimension.
-
-
-Projected evolution
-^^^^^^^^^^^^^^^^^^^
-
-After :math:`m` Lanczos steps, the basis vectors form the matrix
+Instead of evaluating one high-degree polynomial for :math:`e^A`, the
+algorithm uses
 
 .. math::
 
-   Q_m = \begin{bmatrix}q_1 & \cdots & q_m\end{bmatrix}.
+   e^A v \approx \left(T_m(A/s)\right)^s v,
 
-For a full state-space dimension :math:`N=2^n`, the matrix :math:`Q_m` has shape
-:math:`N\times m`. Projecting the Hamiltonian onto this basis gives
+where :math:`s` is a positive scaling factor. The supported Taylor degrees
+have precomputed double-precision backward-error bounds. :mod:`quantlop`
+chooses :math:`m` and :math:`s` to minimize the estimated number
+:math:`ms` of Hamiltonian-vector products while satisfying those bounds.
 
-.. math::
-
-   T_m = Q_m^\dagger H Q_m.
-
-In exact arithmetic, the Lanczos recurrence makes :math:`T_m` real symmetric
-and tridiagonal, with the :math:`\alpha_j` coefficients on the diagonal and
-the :math:`\beta_j` coefficients on the adjacent diagonals:
+For a Pauli decomposition
 
 .. math::
 
-   T_m =
-   \begin{bmatrix}
-   \alpha_1 & \beta_2 &         &            \\
-   \beta_2  & \alpha_2 & \ddots &            \\
-            & \ddots   & \ddots & \beta_m    \\
-            &          & \beta_m & \alpha_m
-   \end{bmatrix}.
+   \widetilde{H} = \sum_k c_k P_k,
 
-Since :math:`q_1=v/\lVert v\rVert_2`, the input vector is represented in the
-Krylov basis by :math:`\lVert v\rVert_2 e_1`, where
-:math:`e_1=(1,0,\ldots,0)^T` is the first coordinate vector. The
-Lanczos-Krylov approximation is therefore
+each :math:`P_k` has unit matrix norm, giving the inexpensive bound
 
 .. math::
 
-   e^{-itH} v \approx \lVert v\rVert_2 Q_m e^{-itT_m} e_1.
+   \lVert A\rVert \leq |t|\sum_k |c_k|.
 
-The small exponential :math:`e^{-itT_m}` evolves the Krylov coefficients, and
-:math:`Q_m` maps the result back to the full state space. Because
-:math:`m \ll N`, the method evaluates the exponential of a much smaller
-tridiagonal matrix rather than that of the full Hamiltonian.
+The parameter selection therefore needs only the compact Pauli
+representation; it does not construct or inspect the full matrix.
+
+
+Matrix-free recurrence
+^^^^^^^^^^^^^^^^^^^^^^
+
+For each of the :math:`s` scaled steps, the Taylor action is accumulated using
+
+.. math::
+
+   b_0 = v,\qquad
+   b_k = \frac{A}{sk}b_{k-1},\qquad
+   f_k = f_{k-1} + b_k,
+
+with :math:`f_0=v`. Every new term requires one direct application of the
+Pauli-sum Hamiltonian. Evaluation stops before degree :math:`m` when the next
+terms are already below the double-precision termination threshold.
+
+The result of one scaled step becomes the input to the next. Only a small
+fixed number of state-sized work vectors is needed, so memory usage remains
+linear in the state-vector dimension and independent of the Taylor degree.

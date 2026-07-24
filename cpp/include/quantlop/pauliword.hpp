@@ -1,28 +1,25 @@
 #pragma once
-#include <quantlop/matvec.hpp>
-#include <quantlop/types.hpp>
 
-namespace quantlop
-{
+#include <quantlop/types.hpp>
 
 class PauliWord
 {
 public:
-    PauliWord(Complex c, String str);
-    PauliWord operator*(Complex c) const;
-    friend PauliWord operator*(Complex c, const PauliWord &pw);
+    PauliWord(Complex coeff, String string);
 
     Size num_qubits() const;
-
-    Complex get_coeff() const;
-    const String &get_string() const;
+    Complex coeff() const;
+    const String &string() const;
 
 private:
     friend class Hamiltonian;
 
-    Complex coeff;
-    String string;
-    MatVec matvec;
-};
+    void apply(const Complex *in, Complex *out, int num_threads) const;
 
-}
+    Complex coeff_;
+    String string_;
+    Size dimension_;
+    Mask flip_mask_ = 0;
+    Mask phase_mask_ = 0;
+    Complex base_phase_ = 1.0;
+};

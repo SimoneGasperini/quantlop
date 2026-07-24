@@ -16,7 +16,7 @@ dependencies = [
 keywords = [
     "quantum-computing",
     "hamiltonian-simulation",
-    "krylov-methods",
+    "matrix-exponential",
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",

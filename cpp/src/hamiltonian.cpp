@@ -3,61 +3,33 @@
 
 #include <quantlop/hamiltonian.hpp>
 
-namespace quantlop
+Hamiltonian::Hamiltonian(std::vector<PauliWord> terms)
+    : terms_(std::move(terms))
 {
-
-Hamiltonian::Hamiltonian(std::vector<PauliWord> pws)
-    : pwords(std::move(pws))
-{
-}
-
-void Hamiltonian::matvec_into(const Complex *in, Complex *out) const
-{
-    Size dim = Size(1) << num_qubits();
-    std::fill(out, out + dim, 0.0);
-    for (const PauliWord &pw : pwords)
-    {
-        pw.matvec(in, out);
-    }
 }
 
 void Hamiltonian::matvec_into(const Complex *in, Complex *out, int num_threads) const
 {
-    Size dim = Size(1) << num_qubits();
-    std::fill(out, out + dim, 0.0);
-    for (const PauliWord &pw : pwords)
+    const Size dimension = Size(1) << num_qubits();
+    std::fill(out, out + dimension, 0.0);
+    for (const PauliWord &term : terms_)
     {
-        pw.matvec(in, out, num_threads);
+        term.apply(in, out, num_threads);
     }
 }
-
-Hamiltonian Hamiltonian::operator*(Complex c) const
-{
-    std::vector<PauliWord> pws;
-    pws.reserve(pwords.size());
-    for (const PauliWord &pw : pwords)
-    {
-        pws.push_back(pw * c);
-    }
-    return Hamiltonian(std::move(pws));
-}
-
-Hamiltonian operator*(Complex c, const Hamiltonian &ham) { return ham * c; }
 
 double Hamiltonian::lcu_norm() const
 {
     double norm = 0.0;
-    for (const PauliWord &pw : pwords)
+    for (const PauliWord &term : terms_)
     {
-        norm += std::abs(pw.coeff);
+        norm += std::abs(term.coeff_);
     }
     return norm;
 }
 
-Size Hamiltonian::num_qubits() const { return pwords.front().num_qubits(); }
+Size Hamiltonian::num_qubits() const { return terms_.front().num_qubits(); }
 
-Size Hamiltonian::num_terms() const { return pwords.size(); }
+Size Hamiltonian::num_terms() const { return terms_.size(); }
 
-const std::vector<PauliWord> &Hamiltonian::get_pwords() const { return pwords; }
-
-}
+const std::vector<PauliWord> &Hamiltonian::terms() const { return terms_; }

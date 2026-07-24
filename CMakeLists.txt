@@ -7,12 +7,9 @@ find_package(OpenMP REQUIRED)
 add_library(
     quantlop_core STATIC
     cpp/src/pauliword.cpp
-    cpp/src/matvec.cpp
     cpp/src/hamiltonian.cpp
-    cpp/src/krylov.cpp
-    cpp/src/simulation.cpp
+    cpp/src/evolution.cpp
 )
-add_library(quantlop::core ALIAS quantlop_core)
 
 target_link_libraries(quantlop_core PRIVATE OpenMP::OpenMP_CXX)
 
@@ -37,14 +34,13 @@ find_package(
 
 execute_process(
     COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
-    RESULT_VARIABLE NANOBIND_CMAKE_DIR_RESULT
     OUTPUT_VARIABLE nanobind_DIR
     OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 find_package(nanobind CONFIG REQUIRED)
 
 nanobind_add_module(_quantlop cpp/bindings/python_bindings.cpp)
-target_link_libraries(_quantlop PRIVATE quantlop::core)
+target_link_libraries(_quantlop PRIVATE quantlop_core)
 
 install(
     TARGETS _quantlop

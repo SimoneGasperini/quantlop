@@ -27,8 +27,8 @@ H = \sum_k c_k P_k
 |\psi(\theta)\rangle = e^{-i \theta H}|\psi\rangle
 ```
 without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is applied directly to
-the dense state vector, and a Lanczos–Krylov method approximates the matrix-exponential action in a much smaller
-subspace.
+the dense state vector, while an adaptively scaled Taylor series evaluates the matrix-exponential action to
+double-precision accuracy.
 
 A dense Hamiltonian for $n$ qubits requires $O(4^n)$ storage, whereas the matrix-free evolution works only with its
 compact Pauli representation. The dense state vector still grows exponentially with the number of qubits, but avoiding

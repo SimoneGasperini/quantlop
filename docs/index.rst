@@ -15,12 +15,12 @@ quantlop
       Apply Pauli words directly to the state vector and avoid storing
       the exponentially large Hamiltonian matrix.
 
-   .. grid-item-card:: Krylov-powered
+   .. grid-item-card:: Accuracy-driven
       :class-card: sd-shadow-sm sd-outline-primary
       :class-title: sd-text-primary
 
-      Approximate time evolution through the action of the matrix exponential,
-      using methods for large sparse problems.
+      Select the Taylor degree and scaling automatically from backward-error
+      bounds tailored to the matrix exponential.
 
    .. grid-item-card:: Multi-threaded
       :class-card: sd-shadow-sm sd-outline-primary
@@ -55,7 +55,8 @@ Explore the documentation
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Learn more about Krylov methods and understand the algorithm implemented in ``quantlop``.
+      Learn how adaptive scaling and Taylor approximation evaluate the
+      exponential action without forming a dense operator.
 
       +++
       Read the guide →
