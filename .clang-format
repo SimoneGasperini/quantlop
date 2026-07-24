@@ -16,6 +16,12 @@ BreakBeforeBraces: Allman
 BreakConstructorInitializers: BeforeColon
 PackConstructorInitializers: Never
 AllowShortFunctionsOnASingleLine: All
+AlignAfterOpenBracket: AlwaysBreak
+PenaltyReturnTypeOnItsOwnLine: 10000
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
 
 PointerAlignment: Right
 ReferenceAlignment: Right
