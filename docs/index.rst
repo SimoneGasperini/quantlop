@@ -20,7 +20,7 @@ quantlop
       :class-title: sd-text-primary
 
       Approximate time evolution through the action of the matrix exponential,
-      using a numerical method designed for large sparse problems.
+      using methods for large sparse problems.
 
    .. grid-item-card:: Multi-threaded
       :class-card: sd-shadow-sm sd-outline-primary
@@ -43,7 +43,7 @@ Explore the documentation
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Install ``quantlop`` and run your first matrix-free simulation.
+      Install ``quantlop`` and run your first matrix-free simulation of Hamiltonian evolution.
 
       +++
       Start here →
@@ -55,7 +55,7 @@ Explore the documentation
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Learn the concepts and workflows behind Hamiltonian evolution.
+      Learn more about Krylov methods and understand the algorithm implemented in ``quantlop``.
 
       +++
       Read the guide →
