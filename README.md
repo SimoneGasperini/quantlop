@@ -2,8 +2,8 @@
 ### High-performance quantum simulator for matrix-free Hamiltonian evolution
 
 <p align="center">
-    <img src="light_logo.png#gh-light-mode-only" alt="quantlop">
-    <img src="dark_logo.png#gh-dark-mode-only" alt="quantlop">
+    <img src="assets/light_logo.png#gh-light-mode-only" alt="quantlop">
+    <img src="assets/dark_logo.png#gh-dark-mode-only" alt="quantlop">
 </p>
 
 <p align="center">
@@ -19,13 +19,16 @@
 
 `quantlop` is a Python package, backed by a native C++ core, for simulating the evolution of quantum states
 under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an $n$-qubit Hamiltonian
-```math
-H = \sum_k c_k P_k
-```
+<p align="center">
+    <img src="assets/light_ham_eq.png#gh-light-mode-only" alt="quantlop">
+    <img src="assets/dark_ham_eq.png#gh-dark-mode-only" alt="quantlop">
+</p>
+
 `quantlop` computes the action
-```math
-|\psi(\theta)\rangle = e^{-i \theta H}|\psi\rangle
-```
+<p align="center">
+    <img src="assets/light_expm_eq.png#gh-light-mode-only" alt="quantlop">
+    <img src="assets/dark_expm_eq.png#gh-dark-mode-only" alt="quantlop">
+</p>
 without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is applied directly to
 the dense state vector, while an adaptively scaled Taylor series evaluates the matrix-exponential action to
 double-precision accuracy.
