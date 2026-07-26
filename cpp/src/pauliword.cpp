@@ -52,7 +52,7 @@ void PauliWord::apply(const Complex *in, Complex *out, int num_threads) const no
 {
     const std::int64_t dimension = static_cast<std::int64_t>(dimension_);
 
-#pragma omp parallel for if (num_threads > 1) num_threads(num_threads) schedule(static)
+#pragma omp parallel for num_threads(num_threads) schedule(static)
     for (std::int64_t input_index = 0; input_index < dimension; ++input_index)
     {
         const Mask output_index = Mask(input_index) ^ flip_mask_;
