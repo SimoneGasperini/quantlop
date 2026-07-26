@@ -9,11 +9,11 @@ Project setup
 -------------
 
 Clone the repository, then install the package in editable mode together with
-the development dependencies:
+the development and documentation dependencies:
 
 .. code-block:: console
 
-   python -m pip install -e .[dev]
+   python -m pip install -e .[dev,docs]
 
 Run the Python test suite with:
 

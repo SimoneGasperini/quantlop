@@ -15,7 +15,9 @@ Hamiltonian
 
 ----
 
-evolve
-------
+Evolution
+---------
 
-.. autofunction:: quantlop.evolve
+.. autofunction:: quantlop.evolve_higham
+
+.. autofunction:: quantlop.evolve_krylov

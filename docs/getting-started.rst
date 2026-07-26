@@ -24,11 +24,11 @@ release from PyPI:
 .. admonition:: Working on quantlop itself?
    :class: ql-note
 
-   Clone the repository and install the package with its development tools:
+   Clone the repository and install with its development and documentation tools:
 
    .. code-block:: console
 
-      pip install -e .[dev]
+      pip install -e .[dev,docs]
 
 
 Quick example
@@ -52,11 +52,13 @@ Here is a simple code example using ``quantlop`` native data structures:
    psi = np.zeros(2**num_qubits, dtype=complex)
    psi[0] = 1.0
 
-   evolved_psi = ql.evolve(ham, psi)
+   evolved_psi1 = ql.evolve_higham(ham, psi)
+   # or
+   evolved_psi2 = ql.evolve_krylov(ham, psi)
 
 The interface allows to import Hamiltonians from other quantum computing
 frameworks using :meth:`~quantlop.Hamiltonian.from_pennylane` and
 :meth:`~quantlop.Hamiltonian.from_qiskit`.
 
 Multi-threaded execution is also available by passing ``num_threads``
-to the :func:`quantlop.evolve` function.
+to :func:`quantlop.evolve_higham` or :func:`quantlop.evolve_krylov`.

@@ -85,8 +85,8 @@ evolved_psi2 = ql.evolve_krylov(ham, psi, num_threads="auto")
 The Python package is built with scikit-build-core, while the numerical C++ code is kept in the standalone `quantlop_core` CMake target.
 See the [Development](https://simonegasperini.github.io/quantlop/development.html) section in the documentation for more details.
 
-Build the project from source in `dev` mode and run Python tests with:
+Build the project from source in editable mode and run Python tests with:
 ```bash
-pip install -e .[dev]
+pip install -e .[dev,docs]
 pytest -v
 ```
