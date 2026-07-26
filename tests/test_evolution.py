@@ -5,8 +5,10 @@ import quantlop as ql
 
 from utils import get_rand_statevector, get_rand_hamiltonian
 
+EVOLVE_FUNCS = [ql.evolve_higham, ql.evolve_krylov]
 
-@pytest.mark.parametrize("evolve_func", [ql.evolve_higham, ql.evolve_krylov])
+
+@pytest.mark.parametrize("evolve_func", EVOLVE_FUNCS)
 @pytest.mark.parametrize("num_qubits", range(1, 11))
 def test_against_scipy(evolve_func, num_qubits):
     psi = get_rand_statevector(num_qubits)
@@ -17,7 +19,7 @@ def test_against_scipy(evolve_func, num_qubits):
     assert np.allclose(psi_scipy, psi_quantlop)
 
 
-@pytest.mark.parametrize("evolve_func", [ql.evolve_higham, ql.evolve_krylov])
+@pytest.mark.parametrize("evolve_func", EVOLVE_FUNCS)
 @pytest.mark.parametrize("num_qubits", range(1, 6))
 def test_identity_evolution(evolve_func, num_qubits):
     psi = get_rand_statevector(num_qubits)
