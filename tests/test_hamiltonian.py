@@ -41,7 +41,9 @@ def test_num_qubits_read_only():
     pw0 = ql.PauliWord(-1.27j, "YIIX")
     pw1 = ql.PauliWord(0.92, "IIZZ")
     ham = ql.Hamiltonian(pwords=[pw0, pw1])
-    with pytest.raises(AttributeError, match="property 'num_qubits' of 'Hamiltonian' object has no setter"):
+    with pytest.raises(
+        AttributeError, match="property 'num_qubits' of 'Hamiltonian' object has no setter"
+    ):
         ham.num_qubits = 6
 
 
@@ -49,7 +51,9 @@ def test_num_terms_read_only():
     pw0 = ql.PauliWord(-1.27j, "YIIX")
     pw1 = ql.PauliWord(0.92, "IIZZ")
     ham = ql.Hamiltonian(pwords=[pw0, pw1])
-    with pytest.raises(AttributeError, match="property 'num_terms' of 'Hamiltonian' object has no setter"):
+    with pytest.raises(
+        AttributeError, match="property 'num_terms' of 'Hamiltonian' object has no setter"
+    ):
         ham.num_terms = 3
 
 
