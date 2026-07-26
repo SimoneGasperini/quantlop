@@ -8,7 +8,8 @@ add_library(
     quantlop_core STATIC
     cpp/src/pauliword.cpp
     cpp/src/hamiltonian.cpp
-    cpp/src/evolution.cpp
+    cpp/src/higham.cpp
+    cpp/src/krylov.cpp
 )
 
 target_link_libraries(quantlop_core PRIVATE OpenMP::OpenMP_CXX)
