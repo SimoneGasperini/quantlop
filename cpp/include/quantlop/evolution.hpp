@@ -3,7 +3,13 @@
 #include <quantlop/hamiltonian.hpp>
 #include <quantlop/types.hpp>
 
-Complex *evolve_higham(const Hamiltonian &ham, const Complex *psi, Complex theta, int num_threads);
+// clang-format off
+
+Complex *evolve_higham(
+    const Hamiltonian &ham,
+    const Complex *psi,
+    Complex theta,
+    int num_threads);
 
 Complex *evolve_krylov(
     const Hamiltonian &ham,
