@@ -33,6 +33,9 @@ class PauliWord(_PauliWord):
         Pauli string supplied at construction.
     """
 
+    def __init__(self, coeff, string):
+        super().__init__(coeff, string)
+
     @property
     def num_qubits(self):
         return self._num_qubits()

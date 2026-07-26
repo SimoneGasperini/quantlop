@@ -61,7 +61,9 @@ psi = np.zeros(2**num_qubits, dtype=complex)
 psi[0] = 1.0
 
 # evolve state vector
-evolved_psi = ql.evolve(ham, psi)
+evolved_psi1 = ql.evolve_higham(ham, psi)
+# or
+evolved_psi2 = ql.evolve_krylov(ham, psi)
 ```
 
 The library also provides class methods to import Hamiltonians directly from other quantum computing frameworks:
@@ -73,7 +75,9 @@ The library also provides class methods to import Hamiltonians directly from oth
 Evolution is serial by default.
 Set `num_threads` to a positive integer to use that many OpenMP threads, or to `"auto"` to use the CPU count reported by the operating system:
 ```python
-evolved_psi = ql.evolve(ham, psi, num_threads="auto")
+evolved_psi1 = ql.evolve_higham(ham, psi, num_threads="auto")
+# or
+evolved_psi2 = ql.evolve_krylov(ham, psi, num_threads="auto")
 ```
 
 
