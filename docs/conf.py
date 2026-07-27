@@ -30,8 +30,8 @@ html_theme_options = {
     "github_url": "https://github.com/SimoneGasperini/quantlop",
     "logo": {
         "alt_text": "quantlop documentation - Home",
-        "image_light": "../light_logo.png",
-        "image_dark": "../dark_logo.png",
+        "image_light": "../assets/light_logo.png",
+        "image_dark": "../assets/dark_logo.png",
     },
     "show_toc_level": 2,
 }
