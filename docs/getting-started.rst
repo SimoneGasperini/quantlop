@@ -4,8 +4,9 @@ Getting started
 ``quantlop`` is a high-performance quantum simulator for evolving systems whose
 Hamiltonians can be expressed as sparse sums of Pauli words. It applies those
 operators directly to the state vector and evaluates the matrix-exponential
-action with adaptive scaling and a truncated Taylor series, avoiding the memory
-cost of constructing a dense Hamiltonian.
+action with either an adaptively scaled, truncated Taylor series or a
+Lanczos-Krylov subspace projection, avoiding the memory cost of constructing a
+dense Hamiltonian.
 
 This page walks you through installing ``quantlop``, defining a qubit
 Hamiltonian in the Pauli basis, preparing an initial state, and running your

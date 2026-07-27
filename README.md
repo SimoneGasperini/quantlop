@@ -17,8 +17,9 @@
 
 ## Introduction
 
-`quantlop` is a Python package, backed by a native C++ core, for simulating the evolution of quantum states
-under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an $n$-qubit Hamiltonian
+`quantlop` is a Python package, backed by a native C++ core, for simulating the evolution of
+quantum states under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an
+$n$-qubit Hamiltonian
 <p align="center">
     <img src="assets/light_ham_eq.png#gh-light-mode-only" alt="quantlop">
     <img src="assets/dark_ham_eq.png#gh-dark-mode-only" alt="quantlop">
@@ -29,13 +30,14 @@ under Hamiltonians expressed as weighted sums of Pauli words $P_k$. For an $n$-q
     <img src="assets/light_expm_eq.png#gh-light-mode-only" alt="quantlop">
     <img src="assets/dark_expm_eq.png#gh-dark-mode-only" alt="quantlop">
 </p>
-without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is applied directly to
-the dense state vector, while an adaptively scaled Taylor series evaluates the matrix-exponential action to
-double-precision accuracy.
+without constructing either the full Hamiltonian matrix or its exponential. Each Pauli word is 
+applied directly to the dense state vector, while either an adaptively scaled Taylor series or a
+Lanczos-Krylov subspace projection evaluates the matrix-exponential action.
 
-A dense Hamiltonian for $n$ qubits requires $O(4^n)$ storage, whereas the matrix-free evolution works only with its
-compact Pauli representation. The dense state vector still grows exponentially with the number of qubits, but avoiding
-the dense operator substantially lowers the memory requirement for Hamiltonians with Pauli decompositions.
+A dense Hamiltonian for $n$ qubits requires $O(4^n)$ storage, whereas the matrix-free evolution
+works only with its compact Pauli representation. The dense state vector still grows exponentially
+with the number of qubits, but avoiding the dense operator substantially lowers the memory
+requirement for Hamiltonians with Pauli decompositions.
 
 
 ## Installation
