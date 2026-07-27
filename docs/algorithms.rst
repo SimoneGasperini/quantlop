@@ -176,7 +176,7 @@ The matrix-free Lanczos-Krylov method [Saad92]_ constructs a low-dimensional
 subspace from repeated applications of the Hamiltonian to the input state.
 It projects the evolution problem onto this subspace, evaluates the
 exponential of the resulting small matrix, and maps the evolved state back to
-the full state-vector space.
+the full state vector space.
 
 Krylov subspace
 ^^^^^^^^^^^^^^^
@@ -280,7 +280,7 @@ the :math:`\beta_j` coefficients on the adjacent diagonals:
 Since :math:`q_1=v/\lVert v\rVert_2`, the input vector is represented in the
 Krylov basis by :math:`\lVert v\rVert_2 e_1`, where
 :math:`e_1=(1,0,\ldots,0)^T` is the first coordinate vector. The
-Lanczos--Krylov approximation is therefore
+Lanczos-Krylov approximation is therefore
 
 .. math::
 
