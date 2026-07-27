@@ -16,6 +16,8 @@ def evolve_higham(ham, psi, theta=1, num_threads=None):
     It applies Pauli terms directly and never constructs the dense Hamiltonian
     or its exponential.
 
+    See :ref:`Higham method <higham-method>` for algorithm details.
+
     Parameters
     ----------
     ham : Hamiltonian
@@ -62,6 +64,8 @@ def evolve_krylov(ham, psi, theta=1, num_threads=None, dim_krylov=30):
 
     The implementation projects the Hamiltonian onto a Lanczos basis, evolves
     within that Krylov subspace, and reconstructs the dense state vector.
+
+    See :ref:`Krylov method <krylov-method>` for algorithm details.
 
     Parameters
     ----------
