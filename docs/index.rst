@@ -45,8 +45,8 @@ Explore the documentation
       +++
       Start here →
 
-   .. grid-item-card:: Overview
-      :link: overview
+   .. grid-item-card:: Algorithms
+      :link: algorithms
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
       :class-title: sd-text-info
@@ -88,6 +88,6 @@ Explore the documentation
    :hidden:
 
    getting-started
-   overview
+   algorithms
    api-reference
    development
