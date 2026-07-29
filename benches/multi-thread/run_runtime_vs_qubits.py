@@ -7,13 +7,11 @@ from tqdm import tqdm
 import quantlop as ql
 
 
-num_qubits = range(1, 21)
+num_qubits = range(1, 29)
 num_terms = 200
-num_threads = (2, 4, 8, 16, 32)
-theta = 1.0
-dim_krylov = 30
+num_threads = (2, 4, 8, 16, 32, 64)
 
-simulations = ["Serial"] + [f"{threads} threads" for threads in num_threads]
+simulations = ["Serial"] + [f"{nt} threads" for nt in num_threads]
 results = {method: {sim: {} for sim in simulations} for method in ("Higham", "Krylov")}
 
 for nq in tqdm(num_qubits, desc="Run simulation"):
@@ -22,33 +20,27 @@ for nq in tqdm(num_qubits, desc="Run simulation"):
     ham = ql.utils.get_rand_hamiltonian(nq, num_terms)
 
     start = time.perf_counter()
-    serial_higham = ql.evolve_higham(ham, psi, theta)
+    serial_higham = ql.evolve_higham(ham, psi)
     end = time.perf_counter()
     label = f"{nq} qubits"
     results["Higham"]["Serial"][label] = end - start
 
     start = time.perf_counter()
-    serial_krylov = ql.evolve_krylov(ham, psi, theta, dim_krylov=dim_krylov)
+    serial_krylov = ql.evolve_krylov(ham, psi)
     end = time.perf_counter()
     results["Krylov"]["Serial"][label] = end - start
     assert np.allclose(serial_higham, serial_krylov)
 
-    for threads in num_threads:
+    for nt in num_threads:
         start = time.perf_counter()
-        higham = ql.evolve_higham(ham, psi, theta, num_threads=threads)
+        higham = ql.evolve_higham(ham, psi, num_threads=nt)
         end = time.perf_counter()
-        results["Higham"][f"{threads} threads"][label] = end - start
+        results["Higham"][f"{nt} threads"][label] = end - start
 
         start = time.perf_counter()
-        krylov = ql.evolve_krylov(
-            ham,
-            psi,
-            theta,
-            num_threads=threads,
-            dim_krylov=dim_krylov,
-        )
+        krylov = ql.evolve_krylov(ham, psi, num_threads=nt)
         end = time.perf_counter()
-        results["Krylov"][f"{threads} threads"][label] = end - start
+        results["Krylov"][f"{nt} threads"][label] = end - start
         assert np.allclose(higham, krylov)
 
 output_path = Path(__file__).parent / "runtime_vs_qubits.json"

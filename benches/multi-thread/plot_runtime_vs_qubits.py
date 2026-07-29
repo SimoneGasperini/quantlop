@@ -7,11 +7,12 @@ import pylab as plt
 
 colors = {
     "Serial": "black",
-    "2 threads": "#9ecae1",
-    "4 threads": "#6baed6",
-    "8 threads": "#4292c6",
-    "16 threads": "#2171b5",
-    "32 threads": "#08519c",
+    "2 threads": "#3b528b",
+    "4 threads": "#31678e",
+    "8 threads": "#297a8e",
+    "16 threads": "#218e8d",
+    "32 threads": "#1fa188",
+    "64 threads": "#2fb47c",
 }
 
 directory = Path(__file__).parent
