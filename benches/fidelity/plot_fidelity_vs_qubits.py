@@ -12,9 +12,9 @@ colors = {
 }
 
 directory = Path(__file__).parent
-filename = "fidelity_vs_terms"
-with (directory / filename + ".json").open() as f:
-    results = json.load(f)
+filename = "fidelity_vs_qubits"
+with (directory / f"{filename}.json").open() as file:
+    results = json.load(file)
 
 fig, ax = plt.subplots(figsize=(9, 6))
 
@@ -37,5 +37,5 @@ ax.legend(fontsize=14)
 ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 fig.tight_layout()
-fig.savefig(directory / filename + ".pdf", bbox_inches="tight")
+fig.savefig(directory / f"{filename}.pdf", bbox_inches="tight")
 plt.close(fig)

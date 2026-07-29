@@ -15,8 +15,9 @@ num_qubits = range(1, 15)
 num_terms = 200
 theta = 1.5
 krylov_dims = (26, 28, 30)
-num_reps = 50
+num_reps = 2
 
+rng = np.random.default_rng(seed=5)
 methods = ["Higham"] + [f"Krylov-{dim}" for dim in krylov_dims]
 results = {method: {} for method in methods}
 
@@ -28,7 +29,7 @@ for nq in num_qubits:
     for _ in trange(num_reps, desc=f"Run simulation {label}"):
         psi = np.zeros(2**nq, dtype=complex)
         psi[0] = 1.0
-        ham = ql.utils.get_rand_hamiltonian(nq, num_terms, seed=42)
+        ham = ql.utils.get_rand_hamiltonian(nq, num_terms, rng=rng)
         exact = sp.linalg.expm(-1j * theta * ham.matrix()) @ psi
 
         evolved = ql.evolve_higham(ham, psi, theta)
