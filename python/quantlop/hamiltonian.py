@@ -1,14 +1,16 @@
 import numpy as np
+import scipy as sp
 
 from ._quantlop import _PauliWord
 from ._quantlop import _Hamiltonian
 
-char2mat = {
+char2dense = {
     "I": np.array([[1, 0], [0, 1]]),
     "X": np.array([[0, 1], [1, 0]]),
     "Y": np.array([[0, -1j], [1j, 0]]),
     "Z": np.array([[1, 0], [0, -1]]),
 }
+char2sparse = {char: sp.sparse.csr_matrix(dense) for char, dense in char2dense.items()}
 
 
 class Hamiltonian(_Hamiltonian):
@@ -115,7 +117,29 @@ class Hamiltonian(_Hamiltonian):
         for pw in self._get_pwords():
             mat = np.ones(shape=(1, 1), dtype=np.complex128)
             for char in pw._get_string():
-                pauli = char2mat.get(char, char2mat["I"])
+                pauli = char2dense.get(char, char2dense["I"])
                 mat = np.kron(mat, pauli)
             matrix += pw._get_coeff() * mat
+        return matrix
+
+    def sparse_matrix(self):
+        """Return the Hamiltonian as a Compressed Sparse Row (CSR) matrix.
+
+        The matrix is assembled as a sum of sparse tensor products, preserving
+        existing qubit-ordering and phase conventions.
+
+        Returns
+        -------
+        scipy.sparse.csr_matrix
+            Complex CSR matrix representing the Hamiltonian.
+        """
+        dim = 2 ** self._num_qubits()
+        matrix = sp.sparse.csr_matrix((dim, dim), dtype=np.complex128)
+        for pw in self._get_pwords():
+            mat = sp.sparse.csr_matrix([[1]], dtype=np.complex128)
+            for char in pw._get_string():
+                pauli = char2sparse.get(char, char2sparse["I"])
+                mat = sp.sparse.kron(mat, pauli, format="csr")
+            matrix += pw._get_coeff() * mat
+        matrix.eliminate_zeros()
         return matrix
