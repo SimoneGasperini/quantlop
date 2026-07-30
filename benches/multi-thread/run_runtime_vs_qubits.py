@@ -7,14 +7,15 @@ from tqdm import tqdm
 import quantlop as ql
 
 
-num_qubits = range(1, 29)
-num_terms = 200
+num_qubits = range(1, 25)
+num_terms = 100
 num_threads = (2, 4, 8, 16, 32, 64)
 
 simulations = ["Serial"] + [f"{nt} threads" for nt in num_threads]
 results = {method: {sim: {} for sim in simulations} for method in ("Higham", "Krylov")}
 
-for nq in tqdm(num_qubits, desc="Run simulation"):
+for nq in num_qubits:
+    print(f"Simulation with {nq} qubits")
     psi = np.zeros(2**nq, dtype=complex)
     psi[0] = 1.0
     ham = ql.utils.get_rand_hamiltonian(nq, num_terms)
@@ -31,7 +32,7 @@ for nq in tqdm(num_qubits, desc="Run simulation"):
     results["Krylov"]["Serial"][label] = end - start
     assert np.allclose(serial_higham, serial_krylov)
 
-    for nt in num_threads:
+    for nt in tqdm(num_threads):
         start = time.perf_counter()
         higham = ql.evolve_higham(ham, psi, num_threads=nt)
         end = time.perf_counter()
@@ -43,6 +44,6 @@ for nq in tqdm(num_qubits, desc="Run simulation"):
         results["Krylov"][f"{nt} threads"][label] = end - start
         assert np.allclose(higham, krylov)
 
-output_path = Path(__file__).parent / "runtime_vs_qubits.json"
-with output_path.open(mode="w") as file:
-    json.dump(results, file, indent=4)
+    output_path = Path(__file__).parent / "runtime_vs_qubits.json"
+    with output_path.open(mode="w") as file:
+        json.dump(results, file, indent=4)

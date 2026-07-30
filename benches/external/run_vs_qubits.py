@@ -12,7 +12,6 @@ DIRECTORY = Path(__file__).parent
 NUM_QUBITS = range(2, 25, 2)
 NUM_TERMS = 200
 NUM_REPS = 7
-KRYLOV_DIM = 40
 RNG_SEED = 5
 
 METHODS = (
@@ -36,7 +35,7 @@ def quantlop_higham(ham, psi):
 
 
 def quantlop_krylov(ham, psi):
-    return ql.evolve_krylov(ham, psi, dim_krylov=KRYLOV_DIM)
+    return ql.evolve_krylov(ham, psi)
 
 
 def runtime_and_memory(func, *args, interval=0.0005):
