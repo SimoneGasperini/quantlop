@@ -1,11 +1,33 @@
 import os
-import numpy as np
+import math
+from numbers import Integral, Real
 
 from ._quantlop import _evolve_higham
 from ._quantlop import _evolve_krylov
 
+DEFAULT_RTOL = 1e-9
+DEFAULT_NTHR = os.cpu_count() - 1
 
-def evolve_higham(ham, psi, theta=1, num_threads=None):
+
+def _validate_num_threads(num_threads):
+    error_message = "num_threads must be a non-zero positive integer number"
+    if not isinstance(num_threads, Integral):
+        raise ValueError(error_message)
+    if num_threads <= 0:
+        raise ValueError(error_message)
+    return int(num_threads)
+
+
+def _validate_theta(theta):
+    error_message = "theta must be a finite real floating point number"
+    if not isinstance(theta, Real):
+        raise ValueError(error_message)
+    if not math.isfinite(theta):
+        raise ValueError(error_message)
+    return float(theta)
+
+
+def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NTHR):
     r"""Apply Hamiltonian evolution using the Higham exponential-action algorithm.
 
     .. math::
@@ -26,10 +48,13 @@ def evolve_higham(ham, psi, theta=1, num_threads=None):
     psi : array_like
         Nonzero one-dimensional input state vector.
     theta : float, optional
-        Real parameter in the exponential. The default is 1.
-    num_threads : int or "auto" or None, optional
-        OpenMP thread selection for Hamiltonian-vector products. ``None``
-        selects serial execution, while ``"auto"`` uses the logical CPU count.
+        Finite real floating point parameter in the exponential. The default
+        is 1.0.
+    rtol : float, optional
+        Requested relative error tolerance. The default is ``1e-9``.
+    num_threads : int, optional
+        OpenMP thread selection for Hamiltonian-vector products. The default is
+        one fewer than the logical CPU count.
 
     Returns
     -------
@@ -47,15 +72,12 @@ def evolve_higham(ham, psi, theta=1, num_threads=None):
         psi = np.array([1.0, 0.0])
         out = ql.evolve_higham(ham, psi, theta=np.pi / 2)
     """
-    if num_threads is None:
-        num_threads = 1
-    elif num_threads == "auto":
-        num_threads = os.cpu_count() or 1
-    state = np.asarray(psi, dtype=np.complex128, order="C")
-    return _evolve_higham(ham, state, theta, num_threads)
+    theta = _validate_theta(theta)
+    num_threads = _validate_num_threads(num_threads)
+    return _evolve_higham(ham, psi, theta, rtol, num_threads)
 
 
-def evolve_krylov(ham, psi, theta=1, num_threads=None, dim_krylov=30):
+def evolve_krylov(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NTHR):
     r"""Apply Hamiltonian evolution using the Lanczos-Krylov subspace algorithm.
 
     .. math::
@@ -75,12 +97,13 @@ def evolve_krylov(ham, psi, theta=1, num_threads=None, dim_krylov=30):
     psi : array_like
         Nonzero one-dimensional input state vector.
     theta : float, optional
-        Real parameter in the exponential. The default is 1.
-    num_threads : int or "auto" or None, optional
-        OpenMP thread selection for Hamiltonian-vector products. ``None``
-        selects serial execution, while ``"auto"`` uses the logical CPU count.
-    dim_krylov : int, optional
-        Maximum Krylov-subspace dimension. The default is 30.
+        Finite real floating point parameter in the exponential. The default
+        is 1.0.
+    rtol : float, optional
+        Requested relative error tolerance. The default is ``1e-9``.
+    num_threads : int, optional
+        OpenMP thread selection for Hamiltonian-vector products. The default is
+        one fewer than the logical CPU count.
 
     Returns
     -------
@@ -98,9 +121,6 @@ def evolve_krylov(ham, psi, theta=1, num_threads=None, dim_krylov=30):
         psi = np.array([1.0, 0.0])
         out = ql.evolve_krylov(ham, psi, theta=np.pi / 2)
     """
-    if num_threads is None:
-        num_threads = 1
-    elif num_threads == "auto":
-        num_threads = os.cpu_count() or 1
-    state = np.asarray(psi, dtype=np.complex128, order="C")
-    return _evolve_krylov(ham, state, theta, num_threads, dim_krylov)
+    theta = _validate_theta(theta)
+    num_threads = _validate_num_threads(num_threads)
+    return _evolve_krylov(ham, psi, theta, rtol, num_threads)
