@@ -66,10 +66,16 @@ psi = np.zeros(2**num_qubits, dtype=complex)
 psi[0] = 1.0
 
 # evolve state vector
-evolved_psi1 = ql.evolve_higham(ham, psi)
+evolved_psi = ql.evolve_higham(ham, psi)
 # or
-evolved_psi2 = ql.evolve_krylov(ham, psi)
+evolved_psi = ql.evolve_krylov(ham, psi)
 ```
+
+Both algorithms select their Taylor truncation or Krylov dimension automatically.
+The default relative tolerance is `1e-9`.
+Smaller values generally improve accuracy at the cost of more computation.
+The tolerance guides the internal approximation rather than measuring the
+final error directly.
 
 The library also provides class methods to import Hamiltonians directly from other quantum computing frameworks:
 - `ql.Hamiltonian.from_pennylane` to build from PennyLane [`Hamiltonian`](https://docs.pennylane.ai/en/stable/code/api/pennylane.Hamiltonian.html) objects
@@ -77,12 +83,10 @@ The library also provides class methods to import Hamiltonians directly from oth
 
 
 ## Multi-threading
-Evolution is serial by default.
-Set `num_threads` to a positive integer to use that many OpenMP threads, or to `"auto"` to use the CPU count reported by the operating system:
+By default, evolution uses one fewer than the logical CPU count reported by the operating system.
+Set `num_threads` to a positive integer to use that many OpenMP threads:
 ```python
-evolved_psi1 = ql.evolve_higham(ham, psi, num_threads="auto")
-# or
-evolved_psi2 = ql.evolve_krylov(ham, psi, num_threads="auto")
+evolved_psi = ql.evolve_higham(ham, psi, num_threads=4)
 ```
 
 

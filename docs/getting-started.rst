@@ -53,13 +53,18 @@ Here is a simple code example using ``quantlop`` native data structures:
    psi = np.zeros(2**num_qubits, dtype=complex)
    psi[0] = 1.0
 
-   evolved_psi1 = ql.evolve_higham(ham, psi)
+   evolved_psi = ql.evolve_higham(ham, psi)
    # or
-   evolved_psi2 = ql.evolve_krylov(ham, psi)
+   evolved_psi = ql.evolve_krylov(ham, psi)
 
-The interface allows to import Hamiltonians from other quantum computing
-frameworks using :meth:`~quantlop.Hamiltonian.from_pennylane` and
-:meth:`~quantlop.Hamiltonian.from_qiskit`.
+Both algorithms select their Taylor truncation or Krylov dimension automatically.
+The default relative tolerance is `1e-9`.
+Smaller values generally improve accuracy at the cost of more computation.
+The tolerance guides the internal approximation rather than measuring the final error directly.
 
-Multi-threaded execution is also available by passing ``num_threads``
-to :func:`quantlop.evolve_higham` or :func:`quantlop.evolve_krylov`.
+The interface allows to import Hamiltonians from other quantum computing frameworks using
+:meth:`~quantlop.Hamiltonian.from_pennylane` and :meth:`~quantlop.Hamiltonian.from_qiskit`.
+
+By default, evolution uses one fewer than the logical CPU count reported by the operating system.
+The thread count can be overridden by passing a positive integer as ``num_threads`` to
+:func:`quantlop.evolve_higham` or :func:`quantlop.evolve_krylov`.

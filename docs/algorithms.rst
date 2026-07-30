@@ -44,15 +44,12 @@ such ideas:
 .. |krylov-method-link| replace:: **Krylov method**
 .. _krylov-method-link: #krylov-method
 
-* The |higham-method-link|_ uses
-  backward-error parameter selection to provide robust accuracy across
-  a wide range of evolution times, with computational cost increasing with
-  the evolution time and Hamiltonian norm.
-
-* The |krylov-method-link|_ can be efficient when the evolution is captured
-  by a modest Krylov subspace, typically for short evolution times or
-  Hamiltonians with a narrow or favorable spectrum. Its accuracy depends on
-  the selected Krylov dimension.
+* |higham-method-link|_ uses scaling and truncated Taylor expansions to
+  approximate the exponential action through repeated Hamiltonian-vector
+  products.
+* |krylov-method-link|_ projects the Hamiltonian onto a low-dimensional Krylov
+  subspace, evolves the state there, and maps the result back to the full
+  state space.
 
 
 .. _higham-method:
@@ -63,47 +60,20 @@ Higham method
 The algorithm of Al-Mohy and Higham [AH11]_ approximates
 :math:`e^{-itH}v` by dividing the evolution into scaled steps and evaluating
 each step with a finite Taylor polynomial. :mod:`quantlop` selects the scaling
-and polynomial degree from backward-error bounds, then generates the Taylor
-terms through direct applications of the Pauli-sum Hamiltonian.
-
-
-Identity shift
-^^^^^^^^^^^^^^
-
-Write the Hamiltonian as
-
-.. math::
-
-   H = cI + \widetilde{H},
-
-where :math:`c` is the sum of the coefficients of all identity Pauli words.
-Because the identity commutes with every operator, its contribution can be
-separated exactly:
-
-.. math::
-
-   e^{-itH}v = e^{-itc}e^{-it\widetilde{H}}v.
-
-The factor :math:`e^{-itc}` is a scalar phase and can be evaluated separately
-at negligible cost. Removing the identity terms also tightens the norm bound
-used to choose the Taylor parameters, which can reduce the required number of
-Hamiltonian-vector products. During the Taylor recurrence, :mod:`quantlop`
-therefore applies only the non-identity Pauli words and accumulates the
-identity contribution as a phase.
+and polynomial degree from the requested relative tolerance, then generates
+the Taylor terms through direct applications of the Pauli-sum Hamiltonian.
 
 
 Scaling and Taylor degree
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Let :math:`A=-it\widetilde{H}` and define the degree-:math:`m` Taylor
-polynomial
+Let :math:`A=-itH` and define the degree-:math:`m` Taylor polynomial
 
 .. math::
 
    T_m(X) = \sum_{k=0}^{m}\frac{X^k}{k!}.
 
-Instead of evaluating one high-degree polynomial for :math:`e^A`, the
-algorithm uses
+Instead of evaluating one high-degree polynomial for :math:`e^A`, the algorithm uses
 
 .. math::
 
@@ -117,16 +87,11 @@ recovers the evolution over the full time interval.
 The two parameters express a cost trade-off. Increasing :math:`m` makes each
 step more accurate but requires more Hamiltonian-vector products per step;
 increasing :math:`s` makes the individual steps easier to approximate but
-requires more steps. For every supported Taylor degree, a precomputed
-backward-error bound gives an admissible norm for double-precision
-computation. :mod:`quantlop` considers these degree and scaling combinations
-and chooses the pair that minimizes the estimated total work :math:`ms`.
-
-For a Pauli decomposition
+requires more steps. For a Pauli decomposition
 
 .. math::
 
-   \widetilde{H} = \sum_k c_k P_k,
+   H = \sum_k c_k P_k,
 
 each :math:`P_k` has unit matrix norm, giving the inexpensive bound
 
@@ -137,6 +102,10 @@ each :math:`P_k` has unit matrix norm, giving the inexpensive bound
 This bound can be computed directly from the Pauli coefficients. Parameter
 selection therefore needs only the compact Pauli representation and does not
 construct or inspect the full matrix.
+
+Using this bound and the requested ``rtol``, :mod:`quantlop` compares suitable
+Taylor degrees and scaling factors. It chooses a combination expected to meet
+the accuracy target with the fewest Hamiltonian-vector products.
 
 
 Matrix-free recurrence
@@ -153,18 +122,16 @@ For each of the :math:`s` scaled steps, the Taylor action is accumulated using
 with :math:`f_0=v`. Here :math:`b_k` is the next term of the Taylor series and
 :math:`f_k` is the running polynomial approximation.
 Within each step, :math:`v` denotes its current input state. To compute
-:math:`b_k`, :mod:`quantlop` applies the residual Hamiltonian
-:math:`\widetilde{H}` to :math:`b_{k-1}` and multiplies the result by
-:math:`-it/(sk)`. It never forms the matrix powers :math:`H^k`; only the
-vectors needed for the current recurrence step are kept in memory. Although
-:math:`m` sets the maximum degree, evaluation stops earlier when the next
-terms are already below the double-precision termination threshold.
+:math:`b_k`, :mod:`quantlop` applies :math:`H` to :math:`b_{k-1}` and
+multiplies the result by :math:`-it/(sk)`. It never forms the matrix powers
+:math:`H^k`; only the vectors needed for the current recurrence step are kept
+in memory. Although :math:`m` sets the maximum degree, evaluation stops
+earlier when the next terms are already below the termination threshold.
 
-The result of one scaled step becomes the input to the next, and the
-corresponding fraction of the identity phase is applied at every step. After
-:math:`s` steps this produces the full evolution. Only a small fixed number of
-state-sized work vectors is needed, so memory usage remains linear in the
-state vector dimension and independent of the Taylor degree.
+The result of one scaled step becomes the input to the next. After :math:`s`
+steps this produces the full evolution. Only a small fixed number of
+state-sized work vectors is needed, so memory usage remains linear in the state
+vector dimension and independent of the Taylor degree.
 
 
 .. _krylov-method:
@@ -192,10 +159,10 @@ Krylov subspace
    = \operatorname{span}\left\{v,\; Hv,\; \ldots,\; H^{m-1}v\right\}.
 
 Since the Hamiltonian is Hermitian, an orthonormal basis for this subspace can
-be constructed efficiently using the Lanczos recurrence.
-For a fixed :math:`m`, this is generally easier over shorter
-evolution times or a narrower relevant spectral interval; longer times or a
-broader spectrum can require a larger subspace.
+be constructed efficiently using the Lanczos recurrence. For a fixed
+:math:`m`, this is generally easier over shorter evolution times or a narrower
+relevant spectral interval. :mod:`quantlop` handles longer times or broader
+spectra by increasing the dimension or using multiple time steps.
 
 Rather than evaluating or truncating the power series term by term, the Krylov
 method projects :math:`H` onto the orthonormal basis of the subspace, evaluates
@@ -244,7 +211,8 @@ When :math:`\beta_{j+1}=0`, the current Krylov subspace is invariant under
 :math:`H`: applying the Hamiltonian cannot generate a new direction, and the
 recurrence terminates exactly. In floating-point arithmetic, :mod:`quantlop`
 treats a sufficiently small :math:`\beta_{j+1}` as this breakdown condition
-and otherwise continues until reaching the selected maximum Krylov dimension.
+and otherwise continues until reaching the automatically selected Krylov
+dimension.
 
 
 Projected evolution

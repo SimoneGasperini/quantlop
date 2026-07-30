@@ -51,7 +51,8 @@ def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NT
         Finite real floating point parameter in the exponential. The default
         is 1.0.
     rtol : float, optional
-        Requested relative error tolerance. The default is ``1e-9``.
+        Relative accuracy target used to select the approximation. Smaller
+        values generally require more computation. The default is ``1e-9``.
     num_threads : int, optional
         OpenMP thread selection for Hamiltonian-vector products. The default is
         one fewer than the logical CPU count.
@@ -100,7 +101,8 @@ def evolve_krylov(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NT
         Finite real floating point parameter in the exponential. The default
         is 1.0.
     rtol : float, optional
-        Requested relative error tolerance. The default is ``1e-9``.
+        Relative accuracy target used to select the approximation. Smaller
+        values generally require more computation. The default is ``1e-9``.
     num_threads : int, optional
         OpenMP thread selection for Hamiltonian-vector products. The default is
         one fewer than the logical CPU count.
