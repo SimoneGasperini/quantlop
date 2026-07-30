@@ -1,3 +1,4 @@
+#include <array>
 #include <bit>
 #include <utility>
 
@@ -30,22 +31,9 @@ PauliWord::PauliWord(Complex coeff, String string)
         }
     }
 
-    const Complex imaginary_unit(0.0, 1.0);
-    switch (y_count & 3)
-    {
-    case 0:
-        factor_ = coeff_;
-        break;
-    case 1:
-        factor_ = coeff_ * imaginary_unit;
-        break;
-    case 2:
-        factor_ = -coeff_;
-        break;
-    default:
-        factor_ = -coeff_ * imaginary_unit;
-        break;
-    }
+    static constexpr std::array<Complex, 4> y_phases =
+        {Complex(1.0, 0.0), Complex(0.0, 1.0), Complex(-1.0, 0.0), Complex(0.0, -1.0)};
+    factor_ = coeff_ * y_phases[y_count & 3];
 }
 
 void PauliWord::apply(const Complex *in, Complex *out, int num_threads) const noexcept

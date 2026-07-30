@@ -8,6 +8,31 @@
 
 #include <quantlop/evolution.hpp>
 
+#include "utils.cpp"
+
+static constexpr Size max_krylov_dimension = 64;
+using DenseMatrix = std::vector<Complex>;
+
+struct LanczosWorkspace
+{
+    LanczosWorkspace(Size state_dimension, Size max_basis_size)
+        : basis_capacity(max_basis_size),
+          tridiagonal(max_basis_size * max_basis_size),
+          previous(state_dimension),
+          current(state_dimension),
+          product(state_dimension)
+    {
+    }
+
+    void reset_tridiagonal() { std::fill(tridiagonal.begin(), tridiagonal.end(), 0.0); }
+
+    Size basis_capacity;
+    std::vector<double> tridiagonal;
+    std::vector<Complex> previous;
+    std::vector<Complex> current;
+    std::vector<Complex> product;
+};
+
 static double l2_norm(const Complex *values, Size dimension)
 {
     double sum = 0.0;
@@ -28,7 +53,7 @@ static Complex dot_product(const Complex *lhs, const Complex *rhs, Size dimensio
     return out;
 }
 
-static double one_norm_dense(const std::vector<Complex> &values, Size dimension)
+static double one_norm_dense(const DenseMatrix &values, Size dimension)
 {
     double best = 0.0;
     for (Index column = 0; column < dimension; ++column)
@@ -43,12 +68,9 @@ static double one_norm_dense(const std::vector<Complex> &values, Size dimension)
     return best;
 }
 
-static std::vector<Complex> matmul_dense(
-    const std::vector<Complex> &lhs,
-    const std::vector<Complex> &rhs,
-    Size dimension)
+static DenseMatrix matmul_dense(const DenseMatrix &lhs, const DenseMatrix &rhs, Size dimension)
 {
-    std::vector<Complex> out(dimension * dimension, Complex(0.0, 0.0));
+    DenseMatrix out(dimension * dimension);
     for (Index row = 0; row < dimension; ++row)
     {
         for (Index inner = 0; inner < dimension; ++inner)
@@ -67,10 +89,14 @@ static std::vector<Complex> matmul_dense(
     return out;
 }
 
-static std::vector<Complex> solve_dense_system(
-    std::vector<Complex> matrix,
-    std::vector<Complex> rhs,
-    Size dimension)
+static void swap_rows(DenseMatrix &matrix, Size first, Size second, Size dimension)
+{
+    Complex *first_row = matrix.data() + first * dimension;
+    Complex *second_row = matrix.data() + second * dimension;
+    std::swap_ranges(first_row, first_row + dimension, second_row);
+}
+
+static DenseMatrix solve_dense_system(DenseMatrix matrix, DenseMatrix rhs, Size dimension)
 {
     for (Index column = 0; column < dimension; ++column)
     {
@@ -88,22 +114,15 @@ static std::vector<Complex> solve_dense_system(
 
         if (pivot != column)
         {
-            for (Index rhs_column = 0; rhs_column < dimension; ++rhs_column)
-            {
-                std::swap(
-                    matrix[column * dimension + rhs_column],
-                    matrix[pivot * dimension + rhs_column]);
-                std::swap(
-                    rhs[column * dimension + rhs_column],
-                    rhs[pivot * dimension + rhs_column]);
-            }
+            swap_rows(matrix, column, pivot, dimension);
+            swap_rows(rhs, column, pivot, dimension);
         }
 
         const Complex diagonal = matrix[column * dimension + column];
-        for (Index rhs_column = 0; rhs_column < dimension; ++rhs_column)
+        for (Index entry = 0; entry < dimension; ++entry)
         {
-            matrix[column * dimension + rhs_column] /= diagonal;
-            rhs[column * dimension + rhs_column] /= diagonal;
+            matrix[column * dimension + entry] /= diagonal;
+            rhs[column * dimension + entry] /= diagonal;
         }
 
         for (Index row = 0; row < dimension; ++row)
@@ -117,18 +136,25 @@ static std::vector<Complex> solve_dense_system(
             {
                 continue;
             }
-            for (Index rhs_column = 0; rhs_column < dimension; ++rhs_column)
+            for (Index entry = 0; entry < dimension; ++entry)
             {
-                matrix[row * dimension + rhs_column] -=
-                    factor * matrix[column * dimension + rhs_column];
-                rhs[row * dimension + rhs_column] -= factor * rhs[column * dimension + rhs_column];
+                matrix[row * dimension + entry] -= factor * matrix[column * dimension + entry];
+                rhs[row * dimension + entry] -= factor * rhs[column * dimension + entry];
             }
         }
     }
     return rhs;
 }
 
-static std::vector<Complex> expm_dense(std::vector<Complex> matrix, Size dimension)
+static void add_to_diagonal(DenseMatrix &matrix, Size dimension, double value)
+{
+    for (Index diagonal = 0; diagonal < dimension; ++diagonal)
+    {
+        matrix[diagonal * dimension + diagonal] += value;
+    }
+}
+
+static DenseMatrix expm_dense(DenseMatrix matrix, Size dimension)
 {
     if (dimension == 1)
     {
@@ -151,72 +177,65 @@ static std::vector<Complex> expm_dense(std::vector<Complex> matrix, Size dimensi
         182.0,
         1.0};
 
-    constexpr double theta_13 = 5.371920351148152;
+    constexpr double pade_theta = 5.371920351148152;
     const double matrix_norm = one_norm_dense(matrix, dimension);
-    int squarings = 0;
-    if (matrix_norm > theta_13)
-    {
-        squarings = static_cast<int>(std::ceil(std::log2(matrix_norm / theta_13)));
-    }
+    const int squarings = matrix_norm > pade_theta
+                              ? static_cast<int>(std::ceil(std::log2(matrix_norm / pade_theta)))
+                              : 0;
     const double scale = std::ldexp(1.0, squarings);
     for (Complex &value : matrix)
     {
         value /= scale;
     }
 
-    const std::vector<Complex> matrix_2 = matmul_dense(matrix, matrix, dimension);
-    const std::vector<Complex> matrix_4 = matmul_dense(matrix_2, matrix_2, dimension);
-    const std::vector<Complex> matrix_6 = matmul_dense(matrix_4, matrix_2, dimension);
+    const DenseMatrix matrix_2 = matmul_dense(matrix, matrix, dimension);
+    const DenseMatrix matrix_4 = matmul_dense(matrix_2, matrix_2, dimension);
+    const DenseMatrix matrix_6 = matmul_dense(matrix_4, matrix_2, dimension);
 
-    std::vector<Complex> temporary_1(dimension * dimension, Complex(0.0, 0.0));
-    std::vector<Complex> temporary_2;
-    std::vector<Complex> u_inner(dimension * dimension, Complex(0.0, 0.0));
-    std::vector<Complex> v(dimension * dimension, Complex(0.0, 0.0));
+    const Size matrix_size = dimension * dimension;
+    DenseMatrix temporary_1(matrix_size);
+    DenseMatrix temporary_2;
+    DenseMatrix u_inner(matrix_size);
+    DenseMatrix v(matrix_size);
 
-    for (Index index = 0; index < dimension * dimension; ++index)
+    for (Index index = 0; index < matrix_size; ++index)
     {
         temporary_1[index] = pade_coefficients[13] * matrix_6[index] +
                              pade_coefficients[11] * matrix_4[index] +
                              pade_coefficients[9] * matrix_2[index];
     }
     temporary_2 = matmul_dense(matrix_6, temporary_1, dimension);
-    for (Index index = 0; index < dimension * dimension; ++index)
+    for (Index index = 0; index < matrix_size; ++index)
     {
         u_inner[index] = temporary_2[index] + pade_coefficients[7] * matrix_6[index] +
                          pade_coefficients[5] * matrix_4[index] +
                          pade_coefficients[3] * matrix_2[index];
     }
-    for (Index diagonal = 0; diagonal < dimension; ++diagonal)
-    {
-        u_inner[diagonal * dimension + diagonal] += pade_coefficients[1];
-    }
-    const std::vector<Complex> u = matmul_dense(matrix, u_inner, dimension);
+    add_to_diagonal(u_inner, dimension, pade_coefficients[1]);
+    const DenseMatrix u = matmul_dense(matrix, u_inner, dimension);
 
-    for (Index index = 0; index < dimension * dimension; ++index)
+    for (Index index = 0; index < matrix_size; ++index)
     {
         temporary_1[index] = pade_coefficients[12] * matrix_6[index] +
                              pade_coefficients[10] * matrix_4[index] +
                              pade_coefficients[8] * matrix_2[index];
     }
     temporary_2 = matmul_dense(matrix_6, temporary_1, dimension);
-    for (Index index = 0; index < dimension * dimension; ++index)
+    for (Index index = 0; index < matrix_size; ++index)
     {
         v[index] = temporary_2[index] + pade_coefficients[6] * matrix_6[index] +
                    pade_coefficients[4] * matrix_4[index] + pade_coefficients[2] * matrix_2[index];
     }
-    for (Index diagonal = 0; diagonal < dimension; ++diagonal)
-    {
-        v[diagonal * dimension + diagonal] += pade_coefficients[0];
-    }
+    add_to_diagonal(v, dimension, pade_coefficients[0]);
 
-    std::vector<Complex> denominator(dimension * dimension);
-    std::vector<Complex> numerator(dimension * dimension);
-    for (Index index = 0; index < dimension * dimension; ++index)
+    DenseMatrix denominator(matrix_size);
+    DenseMatrix numerator(matrix_size);
+    for (Index index = 0; index < matrix_size; ++index)
     {
         denominator[index] = v[index] - u[index];
         numerator[index] = v[index] + u[index];
     }
-    std::vector<Complex> result =
+    DenseMatrix result =
         solve_dense_system(std::move(denominator), std::move(numerator), dimension);
 
     for (int step = 0; step < squarings; ++step)
@@ -226,13 +245,13 @@ static std::vector<Complex> expm_dense(std::vector<Complex> matrix, Size dimensi
     return result;
 }
 
-static std::vector<Complex> extract_scaled_dense(
+static DenseMatrix extract_scaled_dense(
     const std::vector<double> &matrix,
     Size leading_dimension,
     Size dimension,
     Complex scale)
 {
-    std::vector<Complex> out(dimension * dimension, Complex(0.0, 0.0));
+    DenseMatrix out(dimension * dimension);
     for (Index row = 0; row < dimension; ++row)
     {
         for (Index column = 0; column < dimension; ++column)
@@ -247,26 +266,23 @@ static Size build_lanczos_tridiagonal(
     const Hamiltonian &ham,
     const Complex *psi,
     double state_norm,
-    std::vector<double> &tridiagonal,
-    Size max_basis_size,
     int num_threads,
-    std::vector<Complex> &previous,
-    std::vector<Complex> &current,
-    std::vector<Complex> &product)
+    LanczosWorkspace &workspace)
 {
     const Size dimension = ham.dimension();
+    const Size max_basis_size = workspace.basis_capacity;
     const double norm_tolerance = std::numeric_limits<double>::epsilon() * 1e2;
-    const double inverse_state_norm = 1.0 / state_norm;
+    std::vector<double> &tridiagonal = workspace.tridiagonal;
+    std::vector<Complex> &previous = workspace.previous;
+    std::vector<Complex> &current = workspace.current;
+    std::vector<Complex> &product = workspace.product;
     double previous_beta = 0.0;
 
-    for (Index row = 0; row < dimension; ++row)
-    {
-        current[row] = inverse_state_norm * psi[row];
-    }
+    scale_copy(psi, current.data(), dimension, 1.0 / state_norm);
 
     for (Index basis_index = 0; basis_index < max_basis_size; ++basis_index)
     {
-        ham.matvec_into(current.data(), product.data(), num_threads);
+        ham.residual_matvec_into(current.data(), product.data(), num_threads);
 
         if (basis_index > 0)
         {
@@ -311,26 +327,22 @@ static void reconstruct_lanczos_state(
     const Hamiltonian &ham,
     const Complex *psi,
     double state_norm,
-    const std::vector<double> &tridiagonal,
-    Size leading_dimension,
     Size basis_size,
-    Complex theta,
+    double theta,
     Complex *out,
     int num_threads,
-    std::vector<Complex> &previous,
-    std::vector<Complex> &current,
-    std::vector<Complex> &product)
+    LanczosWorkspace &workspace)
 {
     const Size dimension = ham.dimension();
-    const double inverse_state_norm = 1.0 / state_norm;
+    const Size leading_dimension = workspace.basis_capacity;
+    const std::vector<double> &tridiagonal = workspace.tridiagonal;
+    std::vector<Complex> &previous = workspace.previous;
+    std::vector<Complex> &current = workspace.current;
+    std::vector<Complex> &product = workspace.product;
+    scale_copy(psi, current.data(), dimension, 1.0 / state_norm);
 
-    for (Index row = 0; row < dimension; ++row)
-    {
-        current[row] = inverse_state_norm * psi[row];
-    }
-
-    const Complex operator_scale = Complex(0.0, -1.0) * theta;
-    const std::vector<Complex> exponential = expm_dense(
+    const Complex operator_scale(0.0, -theta);
+    const DenseMatrix exponential = expm_dense(
         extract_scaled_dense(tridiagonal, leading_dimension, basis_size, operator_scale),
         basis_size);
 
@@ -343,7 +355,7 @@ static void reconstruct_lanczos_state(
     {
         const double beta = tridiagonal[(basis_index - 1) * leading_dimension + basis_index];
         const double alpha = tridiagonal[(basis_index - 1) * leading_dimension + (basis_index - 1)];
-        ham.matvec_into(current.data(), product.data(), num_threads);
+        ham.residual_matvec_into(current.data(), product.data(), num_threads);
 
         for (Index row = 0; row < dimension; ++row)
         {
@@ -370,44 +382,96 @@ static void reconstruct_lanczos_state(
     }
 }
 
-Complex *evolve_krylov(
+static std::pair<Size, Size> select_krylov_dimension_and_scaling(
+    double norm_bound,
+    Size dimension,
+    double rtol)
+{
+    if (dimension == 1)
+    {
+        return {1, 1};
+    }
+
+    const Size largest_basis = std::min(max_krylov_dimension, dimension);
+    const double log_norm = std::log(norm_bound);
+    const double log_target = std::log(0.5 * rtol);
+    Size best_basis = 2;
+    Size best_scaling = 1;
+    double best_cost = std::numeric_limits<double>::infinity();
+
+    for (Size basis_size = 2; basis_size <= largest_basis; ++basis_size)
+    {
+        Size scaling;
+        if (basis_size == dimension)
+        {
+            scaling = 1;
+        }
+        else
+        {
+            const double log_error_at_one = std::log(2.0) +
+                                            static_cast<double>(basis_size) * log_norm -
+                                            std::lgamma(basis_size + 1);
+            scaling = minimum_scaling(log_error_at_one, basis_size - 1, log_target);
+        }
+
+        const double cost = static_cast<double>(scaling) * static_cast<double>(2 * basis_size - 1);
+        if (cost < best_cost)
+        {
+            best_basis = basis_size;
+            best_scaling = scaling;
+            best_cost = cost;
+        }
+    }
+
+    return {best_basis, best_scaling};
+}
+
+std::unique_ptr<Complex[]> evolve_krylov(
     const Hamiltonian &ham,
     const Complex *psi,
-    Complex theta,
-    int num_threads,
-    int dim_krylov)
+    double theta,
+    double rtol,
+    int num_threads)
 {
     const Size dimension = ham.dimension();
-    std::unique_ptr<Complex[]> out = std::make_unique<Complex[]>(dimension);
-    const double state_norm = l2_norm(psi, dimension);
-    const Size max_basis_size = std::min<Size>(static_cast<Size>(dim_krylov), dimension);
-    std::vector<double> tridiagonal(max_basis_size * max_basis_size, 0.0);
-    std::vector<Complex> previous(dimension);
-    std::vector<Complex> current(dimension);
-    std::vector<Complex> product(dimension);
-    const Size basis_size = build_lanczos_tridiagonal(
-        ham,
-        psi,
-        state_norm,
-        tridiagonal,
-        max_basis_size,
-        num_threads,
-        previous,
-        current,
-        product);
-    reconstruct_lanczos_state(
-        ham,
-        psi,
-        state_norm,
-        tridiagonal,
-        max_basis_size,
-        basis_size,
-        theta,
-        out.get(),
-        num_threads,
-        previous,
-        current,
-        product);
+    const double norm_bound = std::abs(theta) * ham.residual_lcu_norm();
+    std::unique_ptr<Complex[]> state = std::make_unique<Complex[]>(dimension);
 
-    return out.release();
+    if (norm_bound == 0.0)
+    {
+        const Complex phase = std::exp(Complex(0.0, -theta) * ham.identity_coeff());
+        scale_copy(psi, state.get(), dimension, phase);
+        return state;
+    }
+
+    const auto [max_basis_size, scaling] =
+        select_krylov_dimension_and_scaling(norm_bound, dimension, rtol);
+    const double step_theta = theta / static_cast<double>(scaling);
+    const Complex phase_per_step = std::exp(Complex(0.0, -step_theta) * ham.identity_coeff());
+
+    std::copy_n(psi, dimension, state.get());
+    std::unique_ptr<Complex[]> next_state = std::make_unique<Complex[]>(dimension);
+    LanczosWorkspace workspace(dimension, max_basis_size);
+
+    for (Size step = 0; step < scaling; ++step)
+    {
+        const double state_norm = l2_norm(state.get(), dimension);
+        workspace.reset_tridiagonal();
+        const Size basis_size =
+            build_lanczos_tridiagonal(ham, state.get(), state_norm, num_threads, workspace);
+        reconstruct_lanczos_state(
+            ham,
+            state.get(),
+            state_norm,
+            basis_size,
+            step_theta,
+            next_state.get(),
+            num_threads,
+            workspace);
+
+        scale_in_place(next_state.get(), dimension, phase_per_step);
+        state.swap(next_state);
+    }
+
+    return state;
 }

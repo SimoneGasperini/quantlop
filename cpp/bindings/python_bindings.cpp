@@ -1,3 +1,6 @@
+#include <memory>
+#include <utility>
+
 #include <nanobind/nanobind.h>
 #include <nanobind/ndarray.h>
 #include <nanobind/stl/complex.h>
@@ -14,41 +17,28 @@ using namespace nanobind;
 using ComplexArray = ndarray<const Complex, ndim<1>, c_contig, device::cpu>;
 using NumpyComplexArray = ndarray<numpy, Complex, ndim<1>, c_contig>;
 
-static NumpyComplexArray wrap_evolved_state(Complex *out_ptr, Size dim)
+static NumpyComplexArray wrap_evolved_state(std::unique_ptr<Complex[]> out, Size dimension)
 {
+    Complex *out_ptr = out.release();
     capsule owner(out_ptr, [](void *p) noexcept { delete[] static_cast<Complex *>(p); });
-    return NumpyComplexArray(out_ptr, {dim}, owner);
+    return NumpyComplexArray(out_ptr, {dimension}, owner);
 }
 
-static NumpyComplexArray evolve_higham_py(
+template <auto evolve>
+static NumpyComplexArray evolve_py(
     const Hamiltonian &ham,
     ComplexArray psi,
-    Complex theta,
+    double theta,
+    double rtol,
     int num_threads)
 {
     const Size dimension = psi.shape(0);
-    Complex *out;
+    std::unique_ptr<Complex[]> out;
     {
         gil_scoped_release release;
-        out = evolve_higham(ham, psi.data(), theta, num_threads);
+        out = evolve(ham, psi.data(), theta, rtol, num_threads);
     }
-    return wrap_evolved_state(out, dimension);
-}
-
-static NumpyComplexArray evolve_krylov_py(
-    const Hamiltonian &ham,
-    ComplexArray psi,
-    Complex theta,
-    int num_threads,
-    int dim_krylov)
-{
-    const Size dimension = psi.shape(0);
-    Complex *out;
-    {
-        gil_scoped_release release;
-        out = evolve_krylov(ham, psi.data(), theta, num_threads, dim_krylov);
-    }
-    return wrap_evolved_state(out, dimension);
+    return wrap_evolved_state(std::move(out), dimension);
 }
 
 NB_MODULE(_quantlop, module_py)
@@ -69,18 +59,19 @@ NB_MODULE(_quantlop, module_py)
 
     module_py.def(
         "_evolve_higham",
-        &evolve_higham_py,
+        &evolve_py<evolve_higham>,
         arg("ham"),
         arg("psi"),
         arg("theta"),
+        arg("rtol"),
         arg("num_threads"));
 
     module_py.def(
         "_evolve_krylov",
-        &evolve_krylov_py,
+        &evolve_py<evolve_krylov>,
         arg("ham"),
         arg("psi"),
         arg("theta"),
-        arg("num_threads"),
-        arg("dim_krylov"));
+        arg("rtol"),
+        arg("num_threads"));
 }

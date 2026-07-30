@@ -1,4 +1,5 @@
 #pragma once
+
 #include <vector>
 
 #include <quantlop/pauliword.hpp>
@@ -9,7 +10,6 @@ class Hamiltonian
 public:
     Hamiltonian(std::vector<PauliWord> terms);
 
-    void matvec_into(const Complex *in, Complex *out, int num_threads) const noexcept;
     void residual_matvec_into(const Complex *in, Complex *out, int num_threads) const noexcept;
 
     Size dimension() const noexcept;

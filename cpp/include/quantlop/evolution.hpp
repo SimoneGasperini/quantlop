@@ -1,19 +1,20 @@
 #pragma once
 
+#include <memory>
+
 #include <quantlop/hamiltonian.hpp>
 #include <quantlop/types.hpp>
 
-// clang-format off
-
-Complex *evolve_higham(
+std::unique_ptr<Complex[]> evolve_higham(
     const Hamiltonian &ham,
     const Complex *psi,
-    Complex theta,
+    double theta,
+    double rtol,
     int num_threads);
 
-Complex *evolve_krylov(
+std::unique_ptr<Complex[]> evolve_krylov(
     const Hamiltonian &ham,
     const Complex *psi,
-    Complex theta,
-    int num_threads,
-    int dim_krylov);
+    double theta,
+    double rtol,
+    int num_threads);

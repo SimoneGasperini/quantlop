@@ -23,15 +23,6 @@ Hamiltonian::Hamiltonian(std::vector<PauliWord> terms)
     }
 }
 
-void Hamiltonian::matvec_into(const Complex *in, Complex *out, int num_threads) const noexcept
-{
-    std::fill(out, out + dimension_, 0.0);
-    for (const PauliWord &term : terms_)
-    {
-        term.apply(in, out, num_threads);
-    }
-}
-
 void Hamiltonian::residual_matvec_into(const Complex *in, Complex *out, int num_threads)
     const noexcept
 {
