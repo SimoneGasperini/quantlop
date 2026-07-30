@@ -3,6 +3,7 @@ import json
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import ScalarFormatter
 
 from settings import (
     DIRECTORY,
@@ -16,9 +17,10 @@ from settings import (
     apply_common_axes_style,
 )
 
+NUM_QUBITS = 12
 PLOTS = {
-    "runtime_vs_qubits": PLOT_LABELS["runtime"],
-    "memory_vs_qubits": PLOT_LABELS["memory"],
+    "runtime_vs_terms": PLOT_LABELS["runtime"],
+    "memory_vs_terms": PLOT_LABELS["memory"],
 }
 
 with mpl.rc_context(PLOT_STYLE):
@@ -27,27 +29,36 @@ with mpl.rc_context(PLOT_STYLE):
             results = json.load(file)
 
         fig, ax = plt.subplots(**FIGURE_STYLE)
-        max_qubits = max(int(label) for values in results.values() for label in values)
+        term_counts = sorted({int(label) for values in results.values() for label in values})
 
         for method, values in results.items():
-            labels = sorted((label for label in values if int(label) > 1), key=int)
-            qubits = np.array([int(label) for label in labels])
+            labels = sorted(values, key=int)
+            terms = np.array([int(label) for label in labels])
             means = np.array([values[label] for label in labels], dtype=float).mean(axis=1)
             ax.plot(
-                qubits,
+                terms,
                 means,
                 **METHOD_STYLES[method],
                 **LINE_STYLE,
             )
 
         ax.set(
-            xlabel="Number of qubits",
+            xlabel="Number of terms",
             ylabel=ylabel,
-            xlim=(1.5, max_qubits + 0.5),
+            xscale="log",
             yscale="log",
         )
-        ax.set_xticks(np.arange(2, max_qubits + 1))
+        ax.set_xticks(term_counts)
+        ax.xaxis.set_major_formatter(ScalarFormatter())
         apply_common_axes_style(ax)
+        ax.text(
+            0.98,
+            0.04,
+            f"{NUM_QUBITS} qubits",
+            transform=ax.transAxes,
+            ha="right",
+            color="#555555",
+        )
         fig.tight_layout(pad=TIGHT_LAYOUT_PAD)
         fig.savefig(DIRECTORY / f"{filename}.pdf", **SAVEFIG_STYLE)
         plt.close(fig)
