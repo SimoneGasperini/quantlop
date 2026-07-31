@@ -9,14 +9,14 @@ from memory_profiler import memory_usage
 from tqdm import tqdm
 
 DIRECTORY = Path(__file__).parent
-NUM_QUBITS = range(2, 25, 2)
+NUM_QUBITS = range(1, 24)
 NUM_TERMS = 200
 NUM_REPS = 7
 RNG_SEED = 5
 
 METHODS = (
-    "Scipy dense",
-    "Scipy sparse",
+    "SciPy dense",
+    "SciPy sparse",
     "Quantlop Higham",
     "Quantlop Krylov",
 )
@@ -28,14 +28,6 @@ def scipy_dense(mat, psi):
 
 def scipy_sparse(mat, psi):
     return sp.sparse.linalg.expm_multiply(-1j * mat, psi, traceA=0)
-
-
-def quantlop_higham(ham, psi):
-    return ql.evolve_higham(ham, psi)
-
-
-def quantlop_krylov(ham, psi):
-    return ql.evolve_krylov(ham, psi)
 
 
 def runtime_and_memory(func, *args, interval=0.0005):
@@ -76,47 +68,31 @@ memory_data = {method: {} for method in METHODS}
 rng = np.random.default_rng(seed=RNG_SEED)
 
 for num_qubits in tqdm(NUM_QUBITS, desc="Run simulation"):
-    ham = ql.utils.get_rand_hamiltonian(
-        num_qubits=num_qubits,
-        num_terms=NUM_TERMS,
-        rng=rng,
-    )
+    ham = ql.utils.get_rand_hamiltonian(num_qubits, num_terms=NUM_TERMS, rng=rng)
     psi = np.zeros(2**num_qubits, dtype=complex)
     psi[0] = 1.0
 
+    def run(method, func, *args):
+        runtimes, memories, result = run_repetitions(func, *args, num_reps=NUM_REPS)
+        runtime_data[method][num_qubits] = runtimes
+        memory_data[method][num_qubits] = memories
+        return result
+
     if num_qubits < 15:
-        dense = ham.matrix()
-        runtimes, memories, result_dense = run_repetitions(
-            scipy_dense, dense, psi, num_reps=NUM_REPS
-        )
-        runtime_data["Scipy dense"][num_qubits] = runtimes
-        memory_data["Scipy dense"][num_qubits] = memories
-        del dense
+        result_dense = run("SciPy dense", scipy_dense, ham.matrix(), psi)
 
-    sparse = ham.sparse_matrix()
-    runtimes, memories, result_sparse = run_repetitions(
-        scipy_sparse, sparse, psi, num_reps=NUM_REPS
-    )
-    runtime_data["Scipy sparse"][num_qubits] = runtimes
-    memory_data["Scipy sparse"][num_qubits] = memories
-    del sparse
+    if num_qubits < 21:
+        result_sparse = run("SciPy sparse", scipy_sparse, ham.sparse_matrix(), psi)
 
-    runtimes, memories, result_higham = run_repetitions(
-        quantlop_higham, ham, psi, num_reps=NUM_REPS
-    )
-    runtime_data["Quantlop Higham"][num_qubits] = runtimes
-    memory_data["Quantlop Higham"][num_qubits] = memories
-
-    runtimes, memories, result_krylov = run_repetitions(
-        quantlop_krylov, ham, psi, num_reps=NUM_REPS
-    )
-    runtime_data["Quantlop Krylov"][num_qubits] = runtimes
-    memory_data["Quantlop Krylov"][num_qubits] = memories
+    result_higham = run("Quantlop Higham", ql.evolve_higham, ham, psi)
+    result_krylov = run("Quantlop Krylov", ql.evolve_krylov, ham, psi)
 
     if num_qubits < 15:
         assert np.allclose(result_sparse, result_dense)
-    assert np.allclose(result_sparse, result_higham)
-    assert np.allclose(result_sparse, result_krylov)
+    if num_qubits < 21:
+        assert np.allclose(result_sparse, result_higham)
+        assert np.allclose(result_sparse, result_krylov)
+    assert np.allclose(result_higham, result_krylov)
 
-    save_results("runtime_vs_qubits.json", runtime_data)
-    save_results("memory_vs_qubits.json", memory_data)
+    save_results("runtime.json", runtime_data)
+    save_results("memory.json", memory_data)

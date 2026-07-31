@@ -1,37 +1,7 @@
-from pathlib import Path
-
+import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import LogLocator, NullFormatter
 
-DIRECTORY = Path(__file__).parent
-
-PLOT_LABELS = {
-    "runtime": "Runtime [s]",
-    "memory": "Memory [MB]",
-}
-
-METHOD_STYLES = {
-    "Scipy dense": {
-        "label": "SciPy dense",
-        "color": "#4C78A8",
-        "marker": "o",
-    },
-    "Scipy sparse": {
-        "label": "SciPy sparse",
-        "color": "#B279A2",
-        "marker": "s",
-    },
-    "Quantlop Higham": {
-        "label": "Quantlop Higham",
-        "color": "#54A24B",
-        "marker": "^",
-    },
-    "Quantlop Krylov": {
-        "label": "Quantlop Krylov",
-        "color": "#F58518",
-        "marker": "D",
-    },
-}
 
 PLOT_STYLE = {
     "font.family": "sans-serif",
@@ -45,7 +15,7 @@ PLOT_STYLE = {
     "ytick.labelsize": 9,
     "xtick.color": "#333333",
     "ytick.color": "#333333",
-    "legend.fontsize": 9,
+    "legend.fontsize": 10,
     "pdf.fonttype": 42,
     "savefig.facecolor": "white",
 }
@@ -83,7 +53,7 @@ SAVEFIG_STYLE = {
 }
 
 
-def apply_common_axes_style(ax):
+def set_style(ax):
     ax.yaxis.set_major_locator(LogLocator(base=10))
     ax.yaxis.set_minor_locator(LogLocator(base=10, subs=np.arange(2, 10) * 0.1))
     ax.yaxis.set_minor_formatter(NullFormatter())
@@ -96,3 +66,15 @@ def apply_common_axes_style(ax):
     ax.legend(**LEGEND_STYLE)
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
+
+
+def save_plot(fig, ax, qubits, ylabel, output_path):
+    xlabel = "Number of qubits"
+    xmin = min(qubits)
+    xmax = max(qubits)
+    ax.set(xlabel=xlabel, ylabel=ylabel, xlim=(xmin - 0.5, xmax + 0.5), yscale="log")
+    ax.set_xticks(np.arange(xmin, xmax + 1))
+    set_style(ax)
+    fig.tight_layout(pad=TIGHT_LAYOUT_PAD)
+    fig.savefig(output_path, **SAVEFIG_STYLE)
+    plt.close(fig)
