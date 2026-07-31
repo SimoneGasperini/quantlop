@@ -6,28 +6,29 @@ from ._quantlop import _evolve_higham
 from ._quantlop import _evolve_krylov
 
 DEFAULT_RTOL = 1e-9
-DEFAULT_NTHR = os.cpu_count() - 1
 
 
 def _validate_num_threads(num_threads):
-    error_message = "num_threads must be a non-zero positive integer number"
+    if num_threads is None:
+        return 0
+    if num_threads == "auto":
+        return os.cpu_count()
     if not isinstance(num_threads, Integral):
-        raise ValueError(error_message)
+        raise ValueError("num_threads must be a non-zero positive integer number")
     if num_threads <= 0:
-        raise ValueError(error_message)
+        raise ValueError("num_threads must be a non-zero positive integer number")
     return int(num_threads)
 
 
 def _validate_theta(theta):
-    error_message = "theta must be a finite real floating point number"
     if not isinstance(theta, Real):
-        raise ValueError(error_message)
+        raise ValueError("theta must be a finite real floating point number")
     if not math.isfinite(theta):
-        raise ValueError(error_message)
+        raise ValueError("theta must be a finite real floating point number")
     return float(theta)
 
 
-def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NTHR):
+def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=None):
     r"""Apply Hamiltonian evolution using the Higham exponential-action algorithm.
 
     .. math::
@@ -54,8 +55,9 @@ def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NT
         Relative accuracy target used to select the approximation. Smaller
         values generally require more computation. The default is ``1e-9``.
     num_threads : int, optional
-        OpenMP thread selection for Hamiltonian-vector products. The default is
-        one fewer than the logical CPU count.
+        OpenMP thread selection for Hamiltonian-vector products.
+        If ``None`` the execution is serial, if "auto" it automatically selects
+        the thread count reported by the operating system. The default is ``None``.
 
     Returns
     -------
@@ -78,7 +80,7 @@ def evolve_higham(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NT
     return _evolve_higham(ham, psi, theta, rtol, num_threads)
 
 
-def evolve_krylov(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NTHR):
+def evolve_krylov(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=None):
     r"""Apply Hamiltonian evolution using the Lanczos-Krylov subspace algorithm.
 
     .. math::
@@ -104,8 +106,9 @@ def evolve_krylov(ham, psi, theta=1.0, rtol=DEFAULT_RTOL, num_threads=DEFAULT_NT
         Relative accuracy target used to select the approximation. Smaller
         values generally require more computation. The default is ``1e-9``.
     num_threads : int, optional
-        OpenMP thread selection for Hamiltonian-vector products. The default is
-        one fewer than the logical CPU count.
+        OpenMP thread selection for Hamiltonian-vector products.
+        If ``None`` the execution is serial, if ``"auto"`` it automatically selects
+        the thread count reported by the operating system. The default is ``None``.
 
     Returns
     -------

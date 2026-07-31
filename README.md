@@ -83,8 +83,10 @@ The library also provides class methods to import Hamiltonians directly from oth
 
 
 ## Multi-threading
-By default, evolution uses one fewer than the logical CPU count reported by the operating system.
-Set `num_threads` to a positive integer to use that many OpenMP threads:
+By default, evolution is serial. To enable multi-threading, pass a non-zero positive integer
+as ``num_threads`` to request that many OpenMP threads. Passing ``"auto"`` selects the thread
+count reported by the operating system.
+
 ```python
 evolved_psi = ql.evolve_higham(ham, psi, num_threads=4)
 ```

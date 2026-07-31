@@ -65,6 +65,10 @@ The tolerance guides the internal approximation rather than measuring the final 
 The interface allows to import Hamiltonians from other quantum computing frameworks using
 :meth:`~quantlop.Hamiltonian.from_pennylane` and :meth:`~quantlop.Hamiltonian.from_qiskit`.
 
-By default, evolution uses one fewer than the logical CPU count reported by the operating system.
-The thread count can be overridden by passing a positive integer as ``num_threads`` to
-:func:`quantlop.evolve_higham` or :func:`quantlop.evolve_krylov`.
+By default, evolution is serial. To enable multi-threading, pass a non-zero positive integer
+as ``num_threads`` to request that many OpenMP threads. Passing ``"auto"`` selects the thread
+count reported by the operating system.
+
+.. testcode::
+
+   evolved_psi = ql.evolve_higham(ham, psi, num_threads=4)
