@@ -28,7 +28,7 @@ def test_identity_evolution(evolve_func, num_qubits):
 
 
 @pytest.mark.parametrize("evolve_func", EVOLVE_FUNCS)
-@pytest.mark.parametrize("num_threads", [-2, 1.5, "four"])
+@pytest.mark.parametrize("num_threads", [-2, 0, 1.5, "four"])
 def test_num_threads_raises(evolve_func, num_threads):
     with pytest.raises(ValueError, match="num_threads must be a non-zero positive integer"):
         evolve_func(object(), object(), num_threads=num_threads)
