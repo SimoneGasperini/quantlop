@@ -43,4 +43,4 @@ with mpl.rc_context(PLOT_STYLE):
             plotted_qubits.extend(qubits)
             ax.plot(qubits, runtime, marker="o", color=COLORS[sim], label=sim, **LINE_STYLE)
 
-        save_plot(fig, ax, plotted_qubits, "Runtime [s]", DIRECTORY / f"{method.lower()}.pdf")
+        save_plot(fig, ax, plotted_qubits, "Runtime [s]", DIRECTORY / f"{method.lower()}.svg")

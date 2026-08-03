@@ -61,4 +61,4 @@ with mpl.rc_context(PLOT_STYLE):
             plotted_qubits.extend(qubits)
             ax.plot(qubits, means, **METHOD_STYLES[method], **LINE_STYLE)
 
-        save_plot(fig, ax, plotted_qubits, ylabel, DIRECTORY / f"{filename}.pdf")
+        save_plot(fig, ax, plotted_qubits, ylabel, DIRECTORY / f"{filename}.svg")

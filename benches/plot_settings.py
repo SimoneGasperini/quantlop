@@ -77,4 +77,5 @@ def save_plot(fig, ax, qubits, ylabel, output_path):
     set_style(ax)
     fig.tight_layout(pad=TIGHT_LAYOUT_PAD)
     fig.savefig(output_path, **SAVEFIG_STYLE)
+    fig.savefig(output_path.with_suffix(".svg"), **SAVEFIG_STYLE)
     plt.close(fig)
