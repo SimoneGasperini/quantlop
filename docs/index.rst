@@ -33,7 +33,7 @@ Explore the documentation
 .. grid:: 1 2 2 2
    :gutter: 3
 
-   .. grid-item-card:: Getting started
+   .. grid-item-card:: Getting started 💡
       :link: getting-started
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
@@ -45,7 +45,7 @@ Explore the documentation
       +++
       Start here →
 
-   .. grid-item-card:: Algorithms
+   .. grid-item-card:: Algorithms 🧮
       :link: algorithms
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
@@ -57,26 +57,26 @@ Explore the documentation
       +++
       Read the guide →
 
-   .. grid-item-card:: API reference
+   .. grid-item-card:: API reference 📝
       :link: api-reference
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Browse the Python interface for Pauli words, Hamiltonians, and evolution.
+      Browse ``quantlop`` Python interface for Paulis, Hamiltonians, and evolution.
 
       +++
       Browse the API →
 
-   .. grid-item-card:: Development
-      :link: development
+   .. grid-item-card:: Benchmarks 🚀
+      :link: benchmarks
       :link-type: doc
       :class-card: sd-shadow-sm sd-outline-info
       :class-title: sd-text-info
       :class-footer: sd-text-info
 
-      Build from source, run the test suite, and contribute to the project.
+      Explore how ``quantlop`` runtime and memory performance scale with system size.
 
       +++
       Contribute →
@@ -89,5 +89,6 @@ Explore the documentation
 
    getting-started
    algorithms
+   benchmarks
    api-reference
    development
