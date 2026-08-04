@@ -2,6 +2,26 @@ cmake_minimum_required(VERSION 3.18)
 
 project(quantlop VERSION 0.0.7 LANGUAGES CXX)
 
+if(APPLE AND NOT OpenMP_ROOT)
+    find_program(BREW_EXECUTABLE brew)
+    find_program(PORT_EXECUTABLE port)
+
+    if(BREW_EXECUTABLE)
+        execute_process(
+            COMMAND "${BREW_EXECUTABLE}" --prefix libomp
+            OUTPUT_VARIABLE OpenMP_ROOT
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE BREW_LIBOMP_RESULT
+        )
+
+        if(NOT BREW_LIBOMP_RESULT EQUAL 0)
+            unset(OpenMP_ROOT)
+        endif()
+    elseif(PORT_EXECUTABLE AND EXISTS "/opt/local")
+        set(OpenMP_ROOT "/opt/local")
+    endif()
+endif()
+
 find_package(OpenMP REQUIRED)
 
 add_library(
