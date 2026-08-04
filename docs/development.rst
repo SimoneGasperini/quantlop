@@ -15,6 +15,16 @@ the development and documentation dependencies:
 
    python -m pip install -e .[dev,docs]
 
+.. WARNING:: 
+   If you are on macOS, you need first to install ``libomp`` with either 
+   `Homebrew <https://brew.sh/>`_ or `MacPorts <https://www.macports.org/>`_:
+
+   .. code-block:: console
+
+      brew install libomp
+      # or
+      sudo port install libomp +top_level
+
 Run the Python test suite with:
 
 .. code-block:: console
@@ -42,7 +52,7 @@ Install the pre-commit hooks to format Python and C++ files automatically:
 
 .. code-block:: console
 
-   pre-commit install
+   python -m pre_commit install
 
 Build docs
 ----------
