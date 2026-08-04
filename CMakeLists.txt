@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-project(quantlop VERSION 0.0.7 LANGUAGES CXX)
+project(quantlop VERSION 0.1.1 LANGUAGES CXX)
 
 if(APPLE AND NOT OpenMP_ROOT)
     find_program(BREW_EXECUTABLE brew)
